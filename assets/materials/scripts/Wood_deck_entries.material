@@ -1,0 +1,42 @@
+// Wood_deck_entries genrated by blender2ogre 0.5.9
+
+material Wood_deck_entries 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Wood_deck_entries
+        {
+            ambient 0.4588240087032318 0.20784300565719604 0.05490199849009514 1.0
+            diffuse 0.36705921243219386 0.16627440700343854 0.043921599446558934 1.0
+            specular 0.16500000655651093 0.16500000655651093 0.16500000655651093 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+            texture_unit 
+            {
+                texture Wood_deck_entries.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

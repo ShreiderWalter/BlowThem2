@@ -1,0 +1,147 @@
+//
+//This file is part of Caelum.
+//See http://www.ogre3d.org/wiki/index.php/Caelum 
+//
+//Copyright (c) 2006-2007 Caelum team. See Contributors.txt for details.
+//
+//Caelum is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Lesser General Public License as published
+//by the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Caelum is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Lesser General Public License for more details.
+//
+//You should have received a copy of the GNU Lesser General Public License
+//along with Caelum. If not, see <http://www.gnu.org/licenses/>.
+//
+
+vertex_program CaelumSample/BasicVP glsl
+{
+	source CaelumSampleVP.glsl
+	default_params
+	{
+	}
+}
+
+fragment_program CaelumSample/BasicFP glsl
+{
+	source CaelumSampleFP.glsl
+	
+	default_params
+	{
+	    param_named_auto derived_scene_colour derived_scene_colour
+	    param_named_auto light_position_view_space_0 light_position_view_space 0
+	    param_named_auto light_position_view_space_1 light_position_view_space 1
+	    param_named_auto derived_light_diffuse_colour_0 derived_light_diffuse_colour 0
+	    param_named_auto derived_light_diffuse_colour_1 derived_light_diffuse_colour 1
+	}
+}
+
+material Examples/TudorHouse
+{
+    technique Default
+    {
+        pass Main
+        {
+		    ambient 1 1 1
+		    diffuse 1 1 1
+		    fog_override true none
+		    
+		    vertex_program_ref CaelumSample/BasicVP
+		    {
+		    }
+
+		    fragment_program_ref CaelumSample/BasicFP
+		    {
+		    }
+
+            texture_unit Main
+            {
+                texture TudorHouse.jpg
+            }
+        }
+    }
+}
+
+vertex_program CaelumSample/TerrainVP_GLSL glsl
+{
+	source CaelumTerrainVP.glsl
+
+	default_params
+	{
+		param_named_auto camPos camera_position_object_space
+		param_named_auto fogColour fog_colour
+	}
+}
+
+// Special fragment program for the terrain; uses two textures.
+fragment_program CaelumSample/TerrainFP_GLSL glsl
+{
+	source CaelumTerrainFP.glsl
+
+	default_params
+	{
+	    param_named_auto derived_scene_colour derived_scene_colour
+	    param_named_auto light_position_view_space_0 light_position_view_space 0
+	    param_named_auto light_position_view_space_1 light_position_view_space 1
+	    param_named_auto derived_light_diffuse_colour_0 derived_light_diffuse_colour 0
+	    param_named_auto derived_light_diffuse_colour_1 derived_light_diffuse_colour 1
+	    param_named texture1_scale float2 20 20
+	    param_named texture2_scale float2 100 100
+	    param_named texture1 int 0
+	    param_named texture2 int 1
+	}
+}
+
+// Common terrain for caelum samples.
+// Diffuse only lighting for two lights.
+material CaelumSampleTerrain
+{
+	technique
+	{
+		pass Main
+		{
+		    ambient 1 1 1
+		    diffuse 1 1 1
+		    fog_override true none
+		    
+		    vertex_program_ref CaelumSample/TerrainVP_GLSL
+		    {
+		    }
+
+		    fragment_program_ref CaelumSample/TerrainFP_GLSL
+		    {
+			 param_named texture1 int 0
+			 param_named texture2 int 1
+		    }
+		    		    
+			texture_unit
+			{
+				texture terrain_dirt-grass.jpg
+			}
+
+			texture_unit
+			{
+				texture terrain_detail.jpg
+			}
+		}
+	}
+	
+	technique
+	{
+		pass
+		{
+			ambient 1 1 1
+			diffuse 1 1 1
+			texture_unit
+			{
+
+				texture terrain_texture.jpg
+			}
+			
+		}
+	}
+}

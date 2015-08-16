@@ -1,0 +1,88 @@
+//
+// This file is part of Caelum.
+// See http://www.ogre3d.org/wiki/index.php/Caelum 
+// 
+// Copyright (c) 2008 Caelum team. See Contributors.txt for details.
+// 
+// Caelum is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Caelum is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with Caelum. If not, see <http://www.gnu.org/licenses/>.
+//
+
+fragment_program Caelum/PrecipitationFP_glsl glsl
+{
+	source PrecipitationFP.glsl
+	
+	default_params
+	{
+          param_named_auto ambient_light_colour ambient_light_colour
+          param_named intensity float 0
+          param_named corner1 float4 0 0 0 0
+          param_named corner2 float4 0 0 0 0
+          param_named corner3 float4 0 0 0 0
+          param_named corner4 float4 0 0 0 0
+          param_named deltaX float4 0 0 0 0
+          param_named deltaY float4 0 0 0 0
+          param_named precColor float4 0 0 0 0
+
+          param_named scene int 0
+          param_named samplerPrec int 1
+	}
+}
+
+vertex_program VDS/PrecipitationVP_glsl glsl
+{
+	source PrecipitationVP.glsl
+	
+	default_params
+	{
+	}
+}
+
+material Caelum/PrecipitationMaterial
+{
+	technique Default
+	{
+		pass Main
+		{			
+			vertex_program_ref VDS/PrecipitationVP_glsl
+			{
+			}
+			
+			fragment_program_ref Caelum/PrecipitationFP_glsl
+			{
+                      param_named_auto ambient_light_colour ambient_light_colour
+                      param_named intensity float 0
+                      param_named corner1 float4 0 0 0 0
+                      param_named corner2 float4 0 0 0 0
+                      param_named corner3 float4 0 0 0 0
+                      param_named corner4 float4 0 0 0 0
+                      param_named deltaX float4 0 0 0 0
+                      param_named deltaY float4 0 0 0 0
+                      param_named precColor float4 0 0 0 0
+
+                      param_named scene int 0
+                      param_named samplerPrec int 1
+			}
+			
+			texture_unit scene
+			{
+			}
+			
+			texture_unit samplerPrec
+			{
+                		texture precipitation_drizzle.png
+                		filtering trilinear
+			}
+		}
+	}
+}

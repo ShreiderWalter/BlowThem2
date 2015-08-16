@@ -1,0 +1,42 @@
+// Deco_Poupe_Gold genrated by blender2ogre 0.5.9
+
+material Deco_Poupe_Gold 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Deco_Poupe_Gold
+        {
+            ambient 0.9176470041275024 0.9372550249099731 0.04705899953842163 1.0
+            diffuse 0.7341176142412067 0.7498040311009291 0.037647200191724295 1.0
+            specular 0.16500000655651093 0.16500000655651093 0.16500000655651093 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+            texture_unit 
+            {
+                texture Deco_Poupe_Gold.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+// Color_F21 genrated by blender2ogre 0.5.9
+
+material Color_F21 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Color_F21
+        {
+            ambient 0.09803900122642517 0.20000000298023224 0.0 0.7699999809265137
+            diffuse 0.0784312021498561 0.16000000476837162 0.0 0.7699999809265137
+            specular 0.16500000655651093 0.16500000655651093 0.16500000655651093 0.7699999809265137 12.5
+            emissive 0.0 0.0 0.0 0.7699999809265137
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+        }
+    }
+}

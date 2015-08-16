@@ -1,0 +1,42 @@
+// NCascoi genrated by blender2ogre 0.5.9
+
+material NCascoi 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass NCascoi
+        {
+            ambient 0.46666666865348816 0.5764706134796143 0.5803921818733215 1.0
+            diffuse 0.37333334048589073 0.46117649765575663 0.4643137524174712 1.0
+            specular 0.4490196108818054 0.4490196108818054 0.4490196108818054 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+            texture_unit 
+            {
+                texture NRIGHTIN.JPG
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

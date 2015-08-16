@@ -1,0 +1,42 @@
+// _Wavy_Lines_Vertical_ genrated by blender2ogre 0.5.9
+
+material _Wavy_Lines_Vertical_ 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass _Wavy_Lines_Vertical_
+        {
+            ambient 0.5294119715690613 0.5254899859428406 0.4039219915866852 1.0
+            diffuse 0.4235295835663315 0.42039199501860125 0.3231375980844735 1.0
+            specular 0.16500000655651093 0.16500000655651093 0.16500000655651093 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+            texture_unit 
+            {
+                texture _Wavy_Lines_Vertical_.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+#version 100
+
+precision highp int;
+precision highp float;
+
+uniform mat4 worldViewProj;
+uniform mat4 worldMatrix;
+uniform vec3 sunDirection;
+
+attribute vec4 position;
+attribute vec2 uv0;
+
+varying vec2 oUv;
+varying vec3 relPosition;
+varying float sunGlow;
+varying vec4 worldPosition;
+
+void main()
+{
+  gl_Position = worldViewProj * position;
+  worldPosition = worldMatrix * position;
+  oUv = uv0;
+
+  relPosition = normalize (position.xyz);
+  sunGlow = dot (relPosition, normalize (-sunDirection));
+}

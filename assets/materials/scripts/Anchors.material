@@ -1,0 +1,42 @@
+// Anchors genrated by blender2ogre 0.5.9
+
+material Anchors 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Anchors
+        {
+            ambient 0.20784300565719604 0.17647099494934082 0.10588199645280838 1.0
+            diffuse 0.16627440700343854 0.14117679806317085 0.08470559842445846 1.0
+            specular 0.16500000655651093 0.16500000655651093 0.16500000655651093 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+            texture_unit 
+            {
+                texture Anchors.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

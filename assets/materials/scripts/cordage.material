@@ -1,0 +1,35 @@
+// cordage genrated by blender2ogre 0.6.0
+
+material cordage 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass cordage
+        {
+            ambient 0.9750000238418579 0.9399999976158142 0.8349999785423279 1.0
+            diffuse 0.6825000050663945 0.6579999871253968 0.5844999750256541 1.0
+            specular 0.10000000149011612 0.10000000149011612 0.10000000149011612 1.0 25.0
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+        }
+    }
+}

@@ -1,0 +1,35 @@
+// Color_D12 genrated by blender2ogre 0.5.9
+
+material Color_D12 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Color_D12
+        {
+            ambient 0.6000000238418579 0.47843098640441895 0.11764699965715408 1.0
+            diffuse 0.480000026226044 0.38274479482687696 0.09411760112818479 1.0
+            specular 0.16500000655651093 0.16500000655651093 0.16500000655651093 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+        }
+    }
+}
