@@ -1,4 +1,6 @@
 #include "shadergeneratortechniqueresolverlistener.h"
+#include <string>
+#include <sstream>
 
 static Ogre::RTShader::ShaderGenerator * mShaderGenerator = nullptr;         // The Shader generator instance.
 static ShaderGeneratorTechniqueResolverListener * gMatListener = nullptr;      // Shader generator material manager listener.
@@ -6,8 +8,8 @@ static ShaderGeneratorTechniqueResolverListener * gMatListener = nullptr;      /
 using namespace Ogre;
 
 static bool gInit = false;
-static Ogre::Root* gRoot = NULL;
-static Ogre::RenderWindow* gRenderWnd = NULL;
+static Ogre::Root* gRoot = nullptr;
+static Ogre::RenderWindow* gRenderWnd = nullptr;
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 static Ogre::OctreePlugin* gOctreePlugin = nullptr;
@@ -42,9 +44,20 @@ static float camAngleVer = 1.919f; //60 degrees as initial value
 Ogre::SceneNode * shipNode;
 Ogre::SceneNode * wakeNode;
 
-#define CAMERA_Y_POSITION 70
+/** Particle system for cannon shot */
+ParticleSystem * blowParticle;
+
+#define CAMERA_Y_POSITION 80
 #define VESSEL_Y_POSITION -25
-#define VESSEL_Z_DISTATION 180
+#define VESSEL_Z_DISTATION 210
+
+template <typename T>
+std::string to_string(T value)
+{
+    std::ostringstream os ;
+    os << value ;
+    return os.str() ;
+}
 
 
 static Ogre::DataStreamPtr openAPKFile(const Ogre::String& fileName)
@@ -220,12 +233,95 @@ extern "C"
                         shipNode->setScale(0.05, 0.05, 0.05);
                         shipNode->setPosition(camXposition, VESSEL_Y_POSITION, camYposition - VESSEL_Z_DISTATION);
                         shipNode->pitch(Ogre::Degree(90));
-                        shipNode->roll(Ogre::Degree(167));
+                        shipNode->roll(Ogre::Degree(165));
                         shipNode->attachObject(mSoleiRoyal);
+
 
 
                         ParticleSystem * wakeParticle = pSceneMgr->createParticleSystem("Wake", "Water/Wake");
                         wakeNode->attachObject(wakeParticle);
+
+
+                        /** Checking out fire system */
+                        /*Ogre::SceneNode * fire1Node = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+                        fire1Node->setPosition(Ogre::Vector3(100, 100, 100));
+                        Ogre::SceneNode * fire2Node = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+                        fire2Node->setPosition(Ogre::Vector3(100, 100, 100));
+                        Ogre::SceneNode * fire3Node = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+                        fire3Node->setPosition(Ogre::Vector3(100, 100, 100));
+
+
+                        Ogre::Entity * cannon1Entity = pSceneMgr->createEntity("FirstCannon", "Cannon1.mesh");
+                        Ogre::Entity * cannon2Entity = pSceneMgr->createEntity("SecondCannon", "Cannon2.mesh");
+                        Ogre::Entity * cannon3Entity = pSceneMgr->createEntity("ThirdCannon", "Cannon3.mesh");
+
+                        fire1Node->attachObject(cannon1Entity);
+                        fire1Node->setScale(0.05, 0.05, 0.05);
+                        fire2Node->attachObject(cannon2Entity);
+                        fire2Node->setScale(0.05, 0.05, 0.05);
+                        fire3Node->attachObject(cannon3Entity);
+                        fire3Node->setScale(0.05, 0.05, 0.05);
+
+                        Ogre::ParticleSystem * blowParticle1 = pSceneMgr->createParticleSystem("Cannon1", "Examples/Fire");
+                        Ogre::ParticleSystem * blowParticle2 = pSceneMgr->createParticleSystem("Cannon2", "Examples/Fire");
+                        Ogre::ParticleSystem * blowParticle3 = pSceneMgr->createParticleSystem("Cannon3", "Examples/Fire");
+                        //fire1Node->attachObject(blowParticle1);
+                        //fire2Node->attachObject(blowParticle2);
+                        //fire3Node->attachObject(blowParticle3);
+                        //blowParticle->setEmitting(true);*/
+
+                        Ogre::SceneNode **cannonNodes = new Ogre::SceneNode*[21];
+                        Ogre::Entity **cannonEntities = new Ogre::Entity*[21];
+                        for(int i = 0; i < 21; ++i)
+                        {
+                            cannonNodes[i] = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+                            cannonNodes[i]->setPosition(Ogre::Vector3(100, 100, 100));
+                            cannonNodes[i]->pitch(Ogre::Degree(90));
+                            cannonNodes[i]->roll(Ogre::Degree(165));
+
+                            cannonEntities[i] = pSceneMgr->createEntity("Cannon" + to_string((i + 1)),
+                                                                        "Cannon" + to_string((i + 1))
+                                                                        + ".mesh");
+
+                            cannonNodes[i]->attachObject(cannonEntities[i]);
+                            cannonNodes[i]->setScale(0.05, 0.05, 0.05);
+                        }
+                        blowParticle = pSceneMgr->createParticleSystem("Cannon1", "Examples/FireLeft1");
+                        cannonNodes[1]->attachObject(blowParticle);
+                        Ogre::ParticleSystem * blowParticle1 = pSceneMgr->createParticleSystem("Cannon2", "Examples/FireLeft2");
+                        cannonNodes[2]->attachObject(blowParticle1);
+                        Ogre::ParticleSystem * blowParticle2 = pSceneMgr->createParticleSystem("Cannon3", "Examples/FireLeft3");
+                        cannonNodes[3]->attachObject(blowParticle2);
+                        Ogre::ParticleSystem * blowParticle3 = pSceneMgr->createParticleSystem("Cannon4", "Examples/FireLeft4");
+                        cannonNodes[4]->attachObject(blowParticle3);
+                        Ogre::ParticleSystem * blowParticle4 = pSceneMgr->createParticleSystem("Cannon5", "Examples/FireLeft5");
+                        cannonNodes[5]->attachObject(blowParticle4);
+                        Ogre::ParticleSystem * blowParticle5 = pSceneMgr->createParticleSystem("Cannon6", "Examples/FireLeft6");
+                        cannonNodes[6]->attachObject(blowParticle5);
+                        Ogre::ParticleSystem * blowParticle6 = pSceneMgr->createParticleSystem("Cannon7", "Examples/FireLeft7");
+                        cannonNodes[7]->attachObject(blowParticle6);
+                        Ogre::ParticleSystem * blowParticle7 = pSceneMgr->createParticleSystem("Cannon8", "Examples/FireLeft8");
+                        cannonNodes[8]->attachObject(blowParticle7);
+                        Ogre::ParticleSystem * blowParticle8 = pSceneMgr->createParticleSystem("Cannon9", "Examples/FireLeft9");
+                        cannonNodes[9]->attachObject(blowParticle8);
+                        Ogre::ParticleSystem * blowParticle9 = pSceneMgr->createParticleSystem("Cannon10", "Examples/FireLeft10");
+                        cannonNodes[10]->attachObject(blowParticle9);
+                        Ogre::ParticleSystem * blowParticle10 = pSceneMgr->createParticleSystem("Cannon11", "Examples/FireLeft11");
+                        cannonNodes[11]->attachObject(blowParticle10);
+                        Ogre::ParticleSystem * blowParticle11 = pSceneMgr->createParticleSystem("Cannon12", "Examples/FireLeft12");
+                        cannonNodes[12]->attachObject(blowParticle11);
+                        Ogre::ParticleSystem * blowParticle12 = pSceneMgr->createParticleSystem("Cannon13", "Examples/FireLeft13");
+                        cannonNodes[13]->attachObject(blowParticle12);
+                        Ogre::ParticleSystem * blowParticle13 = pSceneMgr->createParticleSystem("Cannon14", "Examples/FireLeft14");
+                        cannonNodes[14]->attachObject(blowParticle13);
+                        Ogre::ParticleSystem * blowParticle14 = pSceneMgr->createParticleSystem("Cannon15", "Examples/FireLeft15");
+                        cannonNodes[15]->attachObject(blowParticle14);
+                        Ogre::ParticleSystem * blowParticle15 = pSceneMgr->createParticleSystem("Cannon16", "Examples/FireLeft16");
+                        cannonNodes[16]->attachObject(blowParticle15);
+                        Ogre::ParticleSystem * blowParticle16 = pSceneMgr->createParticleSystem("Cannon17", "Examples/FireLeft17");
+                        cannonNodes[17]->attachObject(blowParticle16);
+                        Ogre::ParticleSystem * blowParticle17 = pSceneMgr->createParticleSystem("Cannon18", "Examples/FireLeft18");
+                        cannonNodes[18]->attachObject(blowParticle17);
 
                         Ogre::RTShader::ShaderGenerator::getSingletonPtr()->invalidateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
                     }

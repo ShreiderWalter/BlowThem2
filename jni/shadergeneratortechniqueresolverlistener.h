@@ -17,6 +17,10 @@
 #include "SdkTrays.h"
 #include <android/log.h>
 #include "SdkCameraMan.h"
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+
 //#include "Caelum.h"
 //#include "CaelumSystem.h"
 //#include "Hydrax.h"

@@ -1,0 +1,54 @@
+particle_system 1PlasmaShader
+{
+	material Plasma
+	particle_width 3.80999994277954
+	particle_height 2.85999989509583
+	quota 50
+	cull_each false
+	sorted false
+	local_space false
+	iteration_interval 0.0
+	nonvisible_update_timeout 0.0
+	billboard_type point
+	billboard_origin center
+	billboard_rotation_type vertex
+	point_rendering false
+	accurate_facing true
+
+	emitter Point
+	{
+		position 0.0 500.0 0.0
+		direction 0.0 -1.0 0.0
+		angle 31.26
+		emission_rate 10
+		velocity_min 5
+		velocity_max 39.37
+		time_to_live_min 5
+		time_to_live_max 5
+		duration_min 0
+		duration_max 0
+		repeat_delay_min 0
+		repeat_delay_max 0
+		colour_range_start 0 0 0 1
+		colour_range_end 0 0 0 1
+	}
+
+	affector Scaler
+	{
+		rate 130
+	}
+
+	affector Rotator
+	{
+		rotation_speed_range_start 50
+		rotation_speed_range_end 100
+		rotation_range_start 0
+		rotation_range_end 180
+	}
+
+	affector LinearForce
+	{
+		force_vector 0.0 -100.0 0.0
+		force_application add
+	}
+}
