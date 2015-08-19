@@ -20,6 +20,9 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
+#include <thread>
+
+#include "dutchfrigate.h"
 
 //#include "Caelum.h"
 //#include "CaelumSystem.h"
@@ -38,6 +41,7 @@
 #endif
 
 #include "OgreConfigFile.h"
+
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
 #	include "OgreGLES2Plugin.h"
