@@ -2,10 +2,10 @@ LOCAL_PATH := $(call my-dir)
     include $(CLEAR_VARS)
     LOCAL_MODULE    := OgreJNI
 
-    LOCAL_LDLIBS	:= -landroid -lc -lm -ldl -llog -lEGL -lGLESv2 -pthread
+    LOCAL_LDLIBS	:= -landroid -lc -lm -ldl -llog -lEGL -lGLESv2
     LOCAL_LDLIBS	+= -L/home/walter/Android/OgreSource/ogre/build/lib -L/home/walter/Android/OgreSource/ogre/AndroidDependencies/lib/armeabi-v7a
 	
-    LOCAL_LDLIBS	+= -lPlugin_ParticleFXStatic -lPlugin_OctreeSceneManagerStatic -lRenderSystem_GLES2Static -lOgreRTShaderSystemStatic -lOgreOverlayStatic -lOgreTerrainStatic -lOgrePagingStatic -lOgreVolumeStatic -lOgreMainStatic -lsilverlining_static
+    LOCAL_LDLIBS	+= -lPlugin_ParticleFXStatic -lPlugin_OctreeSceneManagerStatic -lRenderSystem_GLES2Static -lOgreRTShaderSystemStatic -lOgreOverlayStatic -lOgreTerrainStatic -lOgrePagingStatic -lOgreVolumeStatic -lOgreMainStatic
     LOCAL_LDLIBS	+= -lzzip -lz -lFreeImage -lfreetype -lOIS  /home/walter/Android/OgreSource/ogre/build/systemlibs/armeabi-v7a/libsupc++.a /home/walter/Android/OgreSource/ogre/build/systemlibs/armeabi-v7a/libstdc++.a /home/walter/Android/OgreSource/ogre/build/OgreJNI/obj/local/armeabi-v7a/libcpufeatures.a
     LOCAL_STATIC_LIBRARIES := android_native_app_glue cpufeatures
     

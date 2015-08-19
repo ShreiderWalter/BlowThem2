@@ -20,7 +20,7 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread>
+#include <pthread.h>
 
 #include "dutchfrigate.h"
 

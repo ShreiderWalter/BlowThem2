@@ -51,12 +51,16 @@ bool leftDeckFire = true;
 #define VESSEL_Y_POSITION -25
 #define VESSEL_Z_DISTATION 210
 
+#include <android/log.h>
 
-void fire()
+
+void * fire(void *)
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    playersShip->setEmitting(false);
     leftDeckFire = false;
+    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "SLEEPED", 1);
+    sleep(3);
+    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "WOKE UP", 1);
+    playersShip->setEmitting(false);
 }
 
 static Ogre::DataStreamPtr openAPKFile(const Ogre::String& fileName)
@@ -315,8 +319,9 @@ extern "C"
 
                 if(leftDeckFire)
                 {
-                    std::thread fireThread(fire);
-                    fireThread.detach();
+                    pthread_t fireThread;
+                    pthread_create(&fireThread, nullptr, &fire, nullptr);
+                    pthread_detach(fireThread);
                 }
 
                 //gVM->DetachCurrentThread();
