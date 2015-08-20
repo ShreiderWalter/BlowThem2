@@ -28,17 +28,14 @@ THE SOFTWARE.
 
 package org.ogre3d.android;
 
-import org.ogre3d.android.OgreActivityJNI;
-
 import android.app.Activity;
-import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -48,8 +45,10 @@ import android.view.SurfaceView;
 import android.content.res.AssetManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import org.ogre3d.jni.R;
 
 public class MainActivity extends Activity implements SensorEventListener {
 	private int direction_ = 0;
@@ -63,28 +62,34 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private boolean initOGRE = false;
 	private AssetManager assetMgr = null;
 
-	private JoystickView test;
+	private JoystickView joystick;
 	private FrameLayout controllerContainer;
 	private RelativeLayout gameController;
 	private PointF shiftDirection, tmp;
 	private float shiftAngleHor, shiftAngleVer;
 
+	private Button rightDeckFire = null;
+	private Button leftDeckFire = null;
+
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		test = new JoystickView(this);
-		test.initJoystickView();
+		rightDeckFire = new Button(this);
+		leftDeckFire = new Button(this);
+		leftDeckFire = new Button(this);
+		joystick = new JoystickView(this);
+		joystick.initJoystickView();
 		controllerContainer = new FrameLayout(this);
 		gameController = new RelativeLayout(this);
 		handler = new Handler();
 		
-        test.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
-            @Override
-            public void onValueChanged(int angle, int power, int direction) {
-                direction_ = direction;
-            }
-        }, 0);
+        joystick.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
+			@Override
+			public void onValueChanged(int angle, int power, int direction) {
+				direction_ = direction;
+			}
+		}, 0);
 		shiftDirection = new PointF(0, 0);
 		tmp = new PointF(0, 0);
 		shiftAngleHor = 0.0f;
@@ -180,7 +185,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 							if (initOGRE && wndCreate) {
 								OgreActivityJNI.renderOneFrame(direction_, shiftAngleHor, shiftAngleVer);
 							}
-                            //Log.e("ENTERED", String.valueOf(test.getDirection()));
+                            //Log.e("ENTERED", String.valueOf(joystick.getDirection()));
 							handler.post(this);
 						}
 					};
@@ -229,15 +234,34 @@ public class MainActivity extends Activity implements SensorEventListener {
 		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 		params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
 		Display display = getWindowManager().getDefaultDisplay();
-		int width = display.getWidth();
 		int height = display.getHeight();
 		params.height = height / 3;
 		params.width = height / 3;
-		test.setLayoutParams(params);
+		joystick.setLayoutParams(params);
+
+		params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+		params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		params.height = height / 4;
+		params.width = height / 7;
+		rightDeckFire.setId(1111);
+		rightDeckFire.setLayoutParams(params);
+		rightDeckFire.setBackgroundResource(R.drawable.rightfirebutton);
+		
+                params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+		params.addRule(RelativeLayout.LEFT_OF, rightDeckFire.getId());
+		params.height = height / 4;
+		params.width = height / 7;
+		leftDeckFire.setLayoutParams(params);
+		leftDeckFire.setBackgroundResource(R.drawable.leftfirebutton);
 
 		params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
 		gameController.setLayoutParams(params);
-		gameController.addView(test);
+		gameController.addView(joystick);
+		gameController.addView(rightDeckFire);
+		gameController.addView(leftDeckFire);
+
 
 		controllerContainer.addView(surfaceView);
 		controllerContainer.addView(gameController);
