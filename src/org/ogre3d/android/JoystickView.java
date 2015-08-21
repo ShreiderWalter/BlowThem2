@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.util.Log;
+
 
 public class JoystickView extends View implements Runnable {
     // Constants
@@ -143,6 +145,7 @@ public class JoystickView extends View implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         xPosition = (int) event.getX();
         yPosition = (int) event.getY();
+        //Log.e("LOGGING", String.valueOf(xPosition) + " " + String.valueOf(yPosition));
         double abs = Math.sqrt((xPosition - centerX) * (xPosition - centerX)
                 + (yPosition - centerY) * (yPosition - centerY));
         if (abs > joystickRadius) {
@@ -160,6 +163,7 @@ public class JoystickView extends View implements Runnable {
         }
         if (onJoystickMoveListener != null
                 && event.getAction() == MotionEvent.ACTION_DOWN) {
+            Log.e("LOGGING", "WORKING!!!");
             if (thread != null && thread.isAlive()) {
                 thread.interrupt();
             }

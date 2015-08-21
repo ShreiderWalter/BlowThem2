@@ -46,6 +46,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import org.ogre3d.jni.R;
 import android.util.Log;
+import android.os.SystemClock;
 
 public class MainActivity extends Activity implements SensorEventListener {
 	private int direction_ = 0;
@@ -185,14 +186,30 @@ public class MainActivity extends Activity implements SensorEventListener {
                                                             shiftAngleVer = shiftVer / mainVer;
                                                         }
                                                         
-                                                        if (pointerId == 1)
+                                                        if (pointerId == 1 && count > 1)
                                                         {
-                                                            Log.e("LOGGING", "MOVE");
-                                                            final MotionEvent localEventVariableTMP = motionEvent;
+                                                        
+                                                            int location[] = new int[2];
+                                                            joystick.getLocationOnScreen(location);
+
+                                                            long downTime = SystemClock.uptimeMillis();
+                                                            long eventTime = SystemClock.uptimeMillis() + 100;
+                                                            float x = motionEvent.getX(1) - location[0];
+                                                            float y = motionEvent.getY(1) - location[1];
+                                                            int metaState = 0;
+                                                            //Log.e("LOGGING", String.valueOf(x) + " " + String.valueOf(y));
+                                                            final MotionEvent motionEventTMP = MotionEvent.obtain(
+                                                                downTime, 
+                                                                eventTime, 
+                                                                MotionEvent.ACTION_MOVE, 
+                                                                x, 
+                                                                y, 
+                                                                metaState
+                                                            );
                                                             runOnUiThread(new Runnable(){
                                                                 public void run()
                                                                 {
-                                                                    joystick.onTouchEvent(localEventVariableTMP);
+                                                                    joystick.onTouchEvent(motionEventTMP);
                                                                 }
                                                             });
                                                         }
@@ -211,31 +228,42 @@ public class MainActivity extends Activity implements SensorEventListener {
                                                         }
                                                         else if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), joystick))
                                                         {
-                                                                insideJoystickArea = true;
-                                                                Log.e("LOGGING_DOWN", String.valueOf(insideJoystickArea));
-                                                                final MotionEvent localEventVariable = motionEvent;
-                                                                runOnUiThread(new Runnable(){
-                                                                    public void run()
-                                                                    {
-                                                                        joystick.onTouchEvent(localEventVariable);
-                                                                    }
-                                                                });
+                                                            int location[] = new int[2];
+                                                            joystick.getLocationOnScreen(location);
+
+                                                            long downTime = SystemClock.uptimeMillis();
+                                                            long eventTime = SystemClock.uptimeMillis() + 100;
+                                                            float x = motionEvent.getX(1) - location[0];
+                                                            float y = motionEvent.getY(1) - location[1];
+                                                            int metaState = 0;
+                                                            //Log.e("LOGGING", String.valueOf(x) + " " + String.valueOf(y));
+                                                            final MotionEvent motionEventTMP = MotionEvent.obtain(
+                                                                downTime, 
+                                                                eventTime, 
+                                                                MotionEvent.ACTION_DOWN, 
+                                                                x, 
+                                                                y, 
+                                                                metaState
+                                                            );
+                                                            runOnUiThread(new Runnable(){
+                                                                public void run()
+                                                                {
+                                                                    joystick.onTouchEvent(motionEventTMP);
+                                                                }
+                                                            });
                                                         }
                                                         break;
                                                         
                                                 case MotionEvent.ACTION_POINTER_UP:
-                                                        Log.e("LOGGING", "Before");
-                                                        if(insideJoystickArea)
-                                                        {
-                                                                Log.e("LOGGING", "After");
-                                                                final MotionEvent localEventVariable = motionEvent;
-                                                                runOnUiThread(new Runnable(){
-                                                                    public void run()
-                                                                    {
-                                                                        joystick.onTouchEvent(localEventVariable);
-                                                                    }
-                                                                });
-                                                        }
+
+                                                                //Log.e("LOGGING", "After");
+                                                        final MotionEvent localEventVariable = motionEvent;
+                                                        runOnUiThread(new Runnable(){
+                                                            public void run()
+                                                            {
+                                                                joystick.onTouchEvent(localEventVariable);
+                                                            }
+                                                        });
                                                         break;
 
                                                 case MotionEvent.ACTION_UP:
