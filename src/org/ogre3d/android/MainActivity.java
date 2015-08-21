@@ -119,6 +119,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                 @Override
                 public void onClick(View v) {
                         OgreActivityJNI.shootLeftDeck();
+                        leftDeckFire.setBackgroundResource(0);
+                        leftDeckFire.setEnabled(false);
                         fireButtonClickHandler.postDelayed(leftFireButtonClickRunnable, 3000);
                 }
         });
@@ -127,6 +129,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                 @Override
                 public void onClick(View v) {
                         OgreActivityJNI.shootRightDeck();
+                        rightDeckFire.setBackgroundResource(0);
+                        rightDeckFire.setEnabled(false);
                         fireButtonClickHandler.postDelayed(rightFireButtonClickRunnable, 3000);
                 }
         });
@@ -163,30 +167,34 @@ public class MainActivity extends Activity implements SensorEventListener {
                                         case MotionEvent.ACTION_MOVE:
                                         
                                                 int count = motionEvent.getPointerCount();
+                                                int pointerId = 0;
                                                 for (int i = 0; i < count; i++) {
-                                                        shiftDirection.x = motionEvent.getX() - tmp.x;
-                                                        shiftDirection.y = motionEvent.getY() - tmp.y;
-                                                        tmp.x += (motionEvent.getX() - tmp.x);
-                                                        tmp.y += (motionEvent.getY() - tmp.y);
-                                                        float mainHor = width;
-                                                        float shiftHor = shiftDirection.x;
-                                                        shiftAngleHor = shiftHor / mainHor;
-
-                                                        float mainVer = height;
-                                                        float shiftVer = shiftDirection.y;
-                                                        shiftAngleVer = shiftVer / mainVer;
-                                                        
-                                                        actionIndex = motionEvent.getActionIndex();
-                                                        if (count == 2 && i == 1)
+                                                        pointerId = motionEvent.getPointerId(i);
+                                                        if(pointerId == 0)
                                                         {
-                                                                Log.e("LOGGING", "MOVE");
-                                                                final MotionEvent localEventVariableTMP = motionEvent;
-                                                                runOnUiThread(new Runnable(){
-                                                                    public void run()
-                                                                    {
-                                                                        joystick.onTouchEvent(localEventVariableTMP);
-                                                                    }
-                                                                });
+                                                            shiftDirection.x = motionEvent.getX() - tmp.x;
+                                                            shiftDirection.y = motionEvent.getY() - tmp.y;
+                                                            tmp.x += (motionEvent.getX() - tmp.x);
+                                                            tmp.y += (motionEvent.getY() - tmp.y);
+                                                            float mainHor = width;
+                                                            float shiftHor = shiftDirection.x;
+                                                            shiftAngleHor = shiftHor / mainHor;
+
+                                                            float mainVer = height;
+                                                            float shiftVer = shiftDirection.y;
+                                                            shiftAngleVer = shiftVer / mainVer;
+                                                        }
+                                                        
+                                                        if (pointerId == 1)
+                                                        {
+                                                            Log.e("LOGGING", "MOVE");
+                                                            final MotionEvent localEventVariableTMP = motionEvent;
+                                                            runOnUiThread(new Runnable(){
+                                                                public void run()
+                                                                {
+                                                                    joystick.onTouchEvent(localEventVariableTMP);
+                                                                }
+                                                            });
                                                         }
                                                 }
                                                         break;
@@ -195,14 +203,10 @@ public class MainActivity extends Activity implements SensorEventListener {
                                                         
                                                         if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), leftDeckFire))
                                                         {
-                                                                leftDeckFire.setBackgroundResource(0);
-                                                                leftDeckFire.setEnabled(false);
                                                                 leftDeckFire.performClick();
                                                         }
                                                         else if(isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), rightDeckFire))
                                                         {
-                                                                rightDeckFire.setBackgroundResource(0);
-                                                                rightDeckFire.setEnabled(false);
                                                                 rightDeckFire.performClick();
                                                         }
                                                         else if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), joystick))
