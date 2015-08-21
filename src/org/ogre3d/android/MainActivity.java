@@ -158,6 +158,17 @@ public class MainActivity extends Activity implements SensorEventListener {
 							float mainVer = height;
 							float shiftVer = shiftDirection.y;
 							shiftAngleVer = shiftVer / mainVer;
+							
+                                                        if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), joystick))
+							{
+                                                                final MotionEvent localEventVariable = motionEvent;
+                                                                new Handler().post(new Runnable(){
+                                                                    public void run()
+                                                                    {
+                                                                        joystick.onTouchEvent(localEventVariable);
+                                                                    }
+                                                                });
+							}
 							break;
 
 						case MotionEvent.ACTION_POINTER_DOWN:
@@ -177,6 +188,16 @@ public class MainActivity extends Activity implements SensorEventListener {
 								rightDeckFire.performClick();
 								OgreActivityJNI.shootRightDeck();
 								fireButtonClickHandler.postDelayed(rightFireButtonClickRunnable, 3000);
+                                                        }
+                                                        else if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), joystick))
+                                                        {
+                                                                final MotionEvent localEventVariable = motionEvent;
+                                                                new Handler().post(new Runnable(){
+                                                                    public void run()
+                                                                    {
+                                                                        joystick.onTouchEvent(localEventVariable);
+                                                                    }
+                                                                });
                                                         }
 							break;
 
