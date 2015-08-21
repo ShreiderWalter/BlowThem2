@@ -39,7 +39,7 @@ public class JoystickView extends View implements Runnable {
     private int buttonRadius;
     private int lastAngle = 0;
     private int lastPower = 0;
-
+    
     public JoystickView(Context context) {
         super(context);
     }

@@ -156,7 +156,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				int maskedAction = motionEvent.getActionMasked();
 				int pointerCount = motionEvent.getPointerCount();
-				boolean insideJoystickArea = false;
 
                                 int actionIndex = motionEvent.getActionIndex();
                                 
@@ -217,7 +216,6 @@ public class MainActivity extends Activity implements SensorEventListener {
                                                         break;
 
                                                 case MotionEvent.ACTION_POINTER_DOWN:
-                                                        
                                                         if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), leftDeckFire))
                                                         {
                                                                 leftDeckFire.performClick();
@@ -255,13 +253,27 @@ public class MainActivity extends Activity implements SensorEventListener {
                                                         break;
                                                         
                                                 case MotionEvent.ACTION_POINTER_UP:
+                                                        int location[] = new int[2];
+                                                        joystick.getLocationOnScreen(location);
 
-                                                                //Log.e("LOGGING", "After");
-                                                        final MotionEvent localEventVariable = motionEvent;
+                                                        long downTime = SystemClock.uptimeMillis();
+                                                        long eventTime = SystemClock.uptimeMillis() + 100;
+                                                        float x = motionEvent.getX(1) - location[0];
+                                                        float y = motionEvent.getY(1) - location[1];
+                                                        int metaState = 0;
+                                                        //Log.e("LOGGING", String.valueOf(x) + " " + String.valueOf(y));
+                                                        final MotionEvent motionEventTMP = MotionEvent.obtain(
+                                                            downTime, 
+                                                            eventTime, 
+                                                            MotionEvent.ACTION_UP, 
+                                                            x, 
+                                                            y, 
+                                                            metaState
+                                                        );
                                                         runOnUiThread(new Runnable(){
                                                             public void run()
                                                             {
-                                                                joystick.onTouchEvent(localEventVariable);
+                                                                joystick.onTouchEvent(motionEventTMP);
                                                             }
                                                         });
                                                         break;
