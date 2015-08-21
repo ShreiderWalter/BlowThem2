@@ -25,6 +25,8 @@ public:
     Ship(Ogre::SceneManager * pSceneMgr, float x, float y, float z, int leftCannons, int rightCannons);
 
     virtual void setEmitting(bool) = 0;
+    virtual void setEmittingLeft(bool) = 0;
+    virtual void setEmittingRight(bool) = 0;
     virtual void setCurrentPosition(Ogre::Vector3) = 0;
 };
 

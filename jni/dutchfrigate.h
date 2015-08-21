@@ -11,6 +11,8 @@ private:
 public:
     DutchFrigate(Ogre::SceneManager * pSceneMgr, Ogre::Vector3 initialPosition, int leftCannons, int rightCannons);
     void setEmitting(bool);
+    void setEmittingLeft(bool);
+    void setEmittingRight(bool);
     void setCurrentPosition(Ogre::Vector3);
 };
 

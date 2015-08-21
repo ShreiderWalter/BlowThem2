@@ -42,7 +42,6 @@ static float camAngleVer = 1.919f; //60 degrees as initial value
 DutchFrigate * playersShip;
 Ogre::SceneNode * wakeNode;
 
-bool leftDeckFire = true;
 
 /** Particle system for cannon shot */
 //ParticleSystem * blowParticle;
@@ -54,13 +53,22 @@ bool leftDeckFire = true;
 #include <android/log.h>
 
 
-void * fire(void *)
+void * fireLeft(void *)
 {
-    leftDeckFire = false;
+    playersShip->setEmittingLeft(true);
     __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "SLEEPED", 1);
-    sleep(3);
+    usleep(300000);
     __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "WOKE UP", 1);
-    playersShip->setEmitting(false);
+    playersShip->setEmittingLeft(false);
+}
+
+void * fireRight(void *)
+{
+    playersShip->setEmittingRight(true);
+    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "SLEEPED", 1);
+    usleep(300000);
+    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "WOKE UP", 1);
+    playersShip->setEmittingRight(false);
 }
 
 static Ogre::DataStreamPtr openAPKFile(const Ogre::String& fileName)
@@ -241,6 +249,8 @@ extern "C"
                         ParticleSystem * wakeParticle = pSceneMgr->createParticleSystem("Wake", "Water/Wake");
                         wakeNode->attachObject(wakeParticle);
 
+                        playersShip->setEmitting(false);
+
 
                         Ogre::RTShader::ShaderGenerator::getSingletonPtr()->invalidateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
                     }
@@ -259,6 +269,20 @@ extern "C"
         {
             static_cast<Ogre::AndroidEGLWindow*>(gRenderWnd)->_destroyInternalResources();
         }
+    }
+
+    JNIEXPORT void JNICALL Java_org_ogre3d_android_OgreActivityJNI_shootLeftDeck(JNIEnv * env, jobject obj)
+    {
+        pthread_t fireThread;
+        pthread_create(&fireThread, nullptr, &fireLeft, nullptr);
+        pthread_detach(fireThread);
+    }
+
+    JNIEXPORT void JNICALL Java_org_ogre3d_android_OgreActivityJNI_shootRightDeck(JNIEnv * env, jobject obj)
+    {
+        pthread_t fireThread;
+        pthread_create(&fireThread, nullptr, &fireRight, nullptr);
+        pthread_detach(fireThread);
     }
 	
     JNIEXPORT void JNICALL Java_org_ogre3d_android_OgreActivityJNI_renderOneFrame(JNIEnv * env, jobject obj,
@@ -316,13 +340,6 @@ extern "C"
 
                 playersShip->setCurrentPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
                 wakeNode->setPosition(Ogre::Vector3(initXposition + 19, -19, initZposition - VESSEL_Z_DISTATION + 20));
-
-                if(leftDeckFire)
-                {
-                    pthread_t fireThread;
-                    pthread_create(&fireThread, nullptr, &fire, nullptr);
-                    pthread_detach(fireThread);
-                }
 
                 //gVM->DetachCurrentThread();
             }

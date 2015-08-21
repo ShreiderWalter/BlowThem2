@@ -3,19 +3,15 @@
 This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
-
 Copyright (c) 2000-2014 Torus Knot Software Ltd
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -49,6 +45,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import org.ogre3d.jni.R;
+import android.util.Log;
 
 public class MainActivity extends Activity implements SensorEventListener {
 	private int direction_ = 0;
@@ -70,6 +67,40 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	private Button rightDeckFire = null;
 	private Button leftDeckFire = null;
+
+	public boolean isPointInsideView(float x, float y, View view){
+		int location[] = new int[2];
+		view.getLocationOnScreen(location);
+		int viewX = location[0];
+		int viewY = location[1];
+
+		//point is inside view bounds
+		if(( x > viewX && x < (viewX + view.getWidth())) &&
+				( y > viewY && y < (viewY + view.getHeight()))){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private Handler fireButtonClickHandler = new Handler();
+	private Runnable leftFireButtonClickRunnable = new Runnable()
+	{
+            public void run()
+            {
+                leftDeckFire.setBackgroundResource(R.drawable.leftfirebutton);
+                leftDeckFire.setEnabled(true);
+            }
+	};
+	
+        private Runnable rightFireButtonClickRunnable = new Runnable()
+	{
+            public void run()
+            {
+                rightDeckFire.setBackgroundResource(R.drawable.rightfirebutton);
+                rightDeckFire.setEnabled(true);
+            }
+	};
 
 	
 	@Override
@@ -102,29 +133,63 @@ public class MainActivity extends Activity implements SensorEventListener {
 		controllerContainer.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent motionEvent) {
-				if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                                        tmp.x = motionEvent.getX();
-                                        tmp.y = motionEvent.getY();
-				} else if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
-					shiftDirection.x = motionEvent.getX() - tmp.x;
-					shiftDirection.y = motionEvent.getY() - tmp.y;
-					tmp.x += (motionEvent.getX() - tmp.x);
-					tmp.y += (motionEvent.getY() - tmp.y);
-                    float mainHor = width;
-                    float shiftHor = shiftDirection.x;
-                    shiftAngleHor = shiftHor / mainHor;
-                    
-                    float mainVer = height;
-                    float shiftVer = shiftDirection.y;
-                    shiftAngleVer = shiftVer / mainVer;
-                    
-					//Log.e("CAMERA -> ", String.valueOf(shiftDirection.x) + " " + String.valueOf(shiftDirection.y));
-				} else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-					shiftDirection.x = 0;
-					shiftDirection.y = 0;
-					shiftAngleHor = 0.0f;
-					shiftAngleVer = 0.0f;
+				int maskedAction = motionEvent.getActionMasked();
+				int pointerCount = motionEvent.getPointerCount();
+
+				for (int i = 0; i < pointerCount; i++) {
+				
+					int pointerId = motionEvent.getPointerId(i);
+					int actionIndex = motionEvent.getActionIndex();
+					
+					switch (maskedAction) {
+						case MotionEvent.ACTION_DOWN:
+							tmp.x = motionEvent.getX();
+							tmp.y = motionEvent.getY();
+							break;
+						case MotionEvent.ACTION_MOVE:
+							shiftDirection.x = motionEvent.getX() - tmp.x;
+							shiftDirection.y = motionEvent.getY() - tmp.y;
+							tmp.x += (motionEvent.getX() - tmp.x);
+							tmp.y += (motionEvent.getY() - tmp.y);
+							float mainHor = width;
+							float shiftHor = shiftDirection.x;
+							shiftAngleHor = shiftHor / mainHor;
+
+							float mainVer = height;
+							float shiftVer = shiftDirection.y;
+							shiftAngleVer = shiftVer / mainVer;
+							break;
+
+						case MotionEvent.ACTION_POINTER_DOWN:
+                                                        
+							if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), leftDeckFire))
+							{
+                                                                leftDeckFire.setBackgroundResource(0);
+                                                                leftDeckFire.setEnabled(false);
+								leftDeckFire.performClick();
+								OgreActivityJNI.shootLeftDeck();
+								fireButtonClickHandler.postDelayed(leftFireButtonClickRunnable, 3000);
+							}
+							else if(isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), rightDeckFire))
+							{
+                                                                rightDeckFire.setBackgroundResource(0);
+                                                                rightDeckFire.setEnabled(false);
+								rightDeckFire.performClick();
+								OgreActivityJNI.shootRightDeck();
+								fireButtonClickHandler.postDelayed(rightFireButtonClickRunnable, 3000);
+                                                        }
+							break;
+
+						case MotionEvent.ACTION_UP:
+							shiftDirection.x = 0;
+							shiftDirection.y = 0;
+							shiftAngleHor = 0.0f;
+							shiftAngleVer = 0.0f;
+							break;
+
+					}
 				}
+
 				return true;
 			}
 		});

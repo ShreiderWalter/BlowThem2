@@ -36,6 +36,22 @@ void DutchFrigate::setEmitting(bool flag)
     }
 }
 
+void DutchFrigate::setEmittingLeft(bool flag)
+{
+    for(int i = 0; i < 18; ++i)
+    {
+        cannonFire.at(i)->setEmitting(flag);
+    }
+}
+
+void DutchFrigate::setEmittingRight(bool flag)
+{
+    for(int i = 19; i < 36; ++i)
+    {
+        cannonFire.at(i)->setEmitting(flag);
+    }
+}
+
 void DutchFrigate::setCurrentPosition(Ogre::Vector3 currentPosition)
 {
     shipNode->setPosition(currentPosition);
