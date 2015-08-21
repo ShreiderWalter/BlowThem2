@@ -116,6 +116,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		gameController = new RelativeLayout(this);
 		handler = new Handler();
 		
+		
+		
         leftDeckFire.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -405,7 +407,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 		params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
 		params.height = height / 4;
-		params.width = height / 7;
+		params.width = height / 8;
 		rightDeckFire.setId(1111);
 		rightDeckFire.setLayoutParams(params);
 		rightDeckFire.setBackgroundResource(R.drawable.rightfirebutton);
@@ -414,7 +416,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 		params.addRule(RelativeLayout.LEFT_OF, rightDeckFire.getId());
 		params.height = height / 4;
-		params.width = height / 7;
+		params.width = height / 8;
 		leftDeckFire.setLayoutParams(params);
 		leftDeckFire.setBackgroundResource(R.drawable.leftfirebutton);
 

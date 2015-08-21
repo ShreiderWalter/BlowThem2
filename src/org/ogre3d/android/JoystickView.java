@@ -140,9 +140,9 @@ public class JoystickView extends View implements Runnable {
         // painting the move button
         canvas.drawCircle(xPosition, yPosition, buttonRadius, button);
     }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    
+    public void handleTouch(MotionEvent event)
+    {
         xPosition = (int) event.getX();
         yPosition = (int) event.getY();
         //Log.e("LOGGING", String.valueOf(xPosition) + " " + String.valueOf(yPosition));
@@ -163,7 +163,6 @@ public class JoystickView extends View implements Runnable {
         }
         if (onJoystickMoveListener != null
                 && event.getAction() == MotionEvent.ACTION_DOWN) {
-            Log.e("LOGGING", "WORKING!!!");
             if (thread != null && thread.isAlive()) {
                 thread.interrupt();
             }
@@ -173,6 +172,11 @@ public class JoystickView extends View implements Runnable {
                 onJoystickMoveListener.onValueChanged(getAngle(), getPower(),
                         getDirection());
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        handleTouch(event);
         return true;
     }
 
@@ -200,6 +204,7 @@ public class JoystickView extends View implements Runnable {
                 return lastAngle = -90;
             }
         } else {
+            Log.e("BUG", "BUGGY buggy bug");
             if (yPosition <= centerY) {
                 return lastAngle = 0;
             } else {
@@ -238,6 +243,7 @@ public class JoystickView extends View implements Runnable {
         if (direction > 8) {
             direction = 1;
         }
+        
         return direction;
     }
 
