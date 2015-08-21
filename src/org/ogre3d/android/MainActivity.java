@@ -115,6 +115,22 @@ public class MainActivity extends Activity implements SensorEventListener {
 		gameController = new RelativeLayout(this);
 		handler = new Handler();
 		
+        leftDeckFire.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                        OgreActivityJNI.shootLeftDeck();
+                        fireButtonClickHandler.postDelayed(leftFireButtonClickRunnable, 3000);
+                }
+        });
+        
+        rightDeckFire.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                        OgreActivityJNI.shootRightDeck();
+                        fireButtonClickHandler.postDelayed(rightFireButtonClickRunnable, 3000);
+                }
+        });
+		
         joystick.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
 			@Override
 			public void onValueChanged(int angle, int power, int direction) {
@@ -135,81 +151,97 @@ public class MainActivity extends Activity implements SensorEventListener {
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				int maskedAction = motionEvent.getActionMasked();
 				int pointerCount = motionEvent.getPointerCount();
+				boolean insideJoystickArea = false;
 
-				for (int i = 0; i < pointerCount; i++) {
-				
-					int pointerId = motionEvent.getPointerId(i);
-					int actionIndex = motionEvent.getActionIndex();
-					
-					switch (maskedAction) {
-						case MotionEvent.ACTION_DOWN:
-							tmp.x = motionEvent.getX();
-							tmp.y = motionEvent.getY();
-							break;
-						case MotionEvent.ACTION_MOVE:
-							shiftDirection.x = motionEvent.getX() - tmp.x;
-							shiftDirection.y = motionEvent.getY() - tmp.y;
-							tmp.x += (motionEvent.getX() - tmp.x);
-							tmp.y += (motionEvent.getY() - tmp.y);
-							float mainHor = width;
-							float shiftHor = shiftDirection.x;
-							shiftAngleHor = shiftHor / mainHor;
+                                int actionIndex = motionEvent.getActionIndex();
+                                
+                                switch (maskedAction) {
+                                        case MotionEvent.ACTION_DOWN:
+                                                tmp.x = motionEvent.getX();
+                                                tmp.y = motionEvent.getY();
+                                                break;
+                                        case MotionEvent.ACTION_MOVE:
+                                        
+                                                int count = motionEvent.getPointerCount();
+                                                for (int i = 0; i < count; i++) {
+                                                        shiftDirection.x = motionEvent.getX() - tmp.x;
+                                                        shiftDirection.y = motionEvent.getY() - tmp.y;
+                                                        tmp.x += (motionEvent.getX() - tmp.x);
+                                                        tmp.y += (motionEvent.getY() - tmp.y);
+                                                        float mainHor = width;
+                                                        float shiftHor = shiftDirection.x;
+                                                        shiftAngleHor = shiftHor / mainHor;
 
-							float mainVer = height;
-							float shiftVer = shiftDirection.y;
-							shiftAngleVer = shiftVer / mainVer;
-							
-                                                        if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), joystick))
-							{
-                                                                final MotionEvent localEventVariable = motionEvent;
-                                                                new Handler().post(new Runnable(){
+                                                        float mainVer = height;
+                                                        float shiftVer = shiftDirection.y;
+                                                        shiftAngleVer = shiftVer / mainVer;
+                                                        
+                                                        actionIndex = motionEvent.getActionIndex();
+                                                        if (count == 2 && i == 1)
+                                                        {
+                                                                Log.e("LOGGING", "MOVE");
+                                                                final MotionEvent localEventVariableTMP = motionEvent;
+                                                                runOnUiThread(new Runnable(){
                                                                     public void run()
                                                                     {
-                                                                        joystick.onTouchEvent(localEventVariable);
+                                                                        joystick.onTouchEvent(localEventVariableTMP);
                                                                     }
                                                                 });
-							}
-							break;
+                                                        }
+                                                }
+                                                        break;
 
-						case MotionEvent.ACTION_POINTER_DOWN:
+                                                case MotionEvent.ACTION_POINTER_DOWN:
                                                         
-							if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), leftDeckFire))
-							{
+                                                        if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), leftDeckFire))
+                                                        {
                                                                 leftDeckFire.setBackgroundResource(0);
                                                                 leftDeckFire.setEnabled(false);
-								leftDeckFire.performClick();
-								OgreActivityJNI.shootLeftDeck();
-								fireButtonClickHandler.postDelayed(leftFireButtonClickRunnable, 3000);
-							}
-							else if(isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), rightDeckFire))
-							{
+                                                                leftDeckFire.performClick();
+                                                        }
+                                                        else if(isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), rightDeckFire))
+                                                        {
                                                                 rightDeckFire.setBackgroundResource(0);
                                                                 rightDeckFire.setEnabled(false);
-								rightDeckFire.performClick();
-								OgreActivityJNI.shootRightDeck();
-								fireButtonClickHandler.postDelayed(rightFireButtonClickRunnable, 3000);
+                                                                rightDeckFire.performClick();
                                                         }
                                                         else if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), joystick))
                                                         {
+                                                                insideJoystickArea = true;
+                                                                Log.e("LOGGING_DOWN", String.valueOf(insideJoystickArea));
                                                                 final MotionEvent localEventVariable = motionEvent;
-                                                                new Handler().post(new Runnable(){
+                                                                runOnUiThread(new Runnable(){
                                                                     public void run()
                                                                     {
                                                                         joystick.onTouchEvent(localEventVariable);
                                                                     }
                                                                 });
                                                         }
-							break;
+                                                        break;
+                                                        
+                                                case MotionEvent.ACTION_POINTER_UP:
+                                                        Log.e("LOGGING", "Before");
+                                                        if(insideJoystickArea)
+                                                        {
+                                                                Log.e("LOGGING", "After");
+                                                                final MotionEvent localEventVariable = motionEvent;
+                                                                runOnUiThread(new Runnable(){
+                                                                    public void run()
+                                                                    {
+                                                                        joystick.onTouchEvent(localEventVariable);
+                                                                    }
+                                                                });
+                                                        }
+                                                        break;
 
-						case MotionEvent.ACTION_UP:
-							shiftDirection.x = 0;
-							shiftDirection.y = 0;
-							shiftAngleHor = 0.0f;
-							shiftAngleVer = 0.0f;
-							break;
+                                                case MotionEvent.ACTION_UP:
+                                                        shiftDirection.x = 0;
+                                                        shiftDirection.y = 0;
+                                                        shiftAngleHor = 0.0f;
+                                                        shiftAngleVer = 0.0f;
+                                                        break;
 
-					}
-				}
+                                }
 
 				return true;
 			}
