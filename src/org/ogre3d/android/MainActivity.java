@@ -120,6 +120,47 @@ public class MainActivity extends Activity implements SensorEventListener {
                 @Override
                 public boolean onTouch(View v, MotionEvent motionEvent) {
                         joystick.handleTouch(motionEvent);
+                        
+                        int maskedAction = motionEvent.getActionMasked();
+                        int pointerCount = motionEvent.getPointerCount();
+                        int actionIndex = motionEvent.getActionIndex();
+                        
+                        switch(maskedAction)
+                        {
+                            case MotionEvent.ACTION_POINTER_DOWN:
+                                    //Log.e("TRULY", "truly true");
+                                    int location[] = new int[2];
+                                    joystick.getLocationOnScreen(location);
+
+                                    long downTime = SystemClock.uptimeMillis();
+                                    long eventTime = SystemClock.uptimeMillis() + 100;
+                                    float x = motionEvent.getX(actionIndex);
+                                    float y = motionEvent.getY(actionIndex) + location[1];
+                                    int metaState = 0;
+                                    Log.e("LOGGING", String.valueOf(x) + " " + String.valueOf(y));
+                                    final MotionEvent motionEventTMP = MotionEvent.obtain(
+                                        downTime, 
+                                        eventTime, 
+                                        MotionEvent.ACTION_DOWN, 
+                                        x, 
+                                        y, 
+                                        metaState
+                                    );
+                                    if (isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), leftDeckFire))
+                                    {
+                                            leftDeckFire.performClick();
+                                    }
+                                    else if(isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), rightDeckFire))
+                                    {
+                                            rightDeckFire.performClick();
+                                    }
+                                    else if (!isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick))
+                                    {
+
+                                    }
+                            break;
+                        }
+                        
                         return true;
                 }
         });
