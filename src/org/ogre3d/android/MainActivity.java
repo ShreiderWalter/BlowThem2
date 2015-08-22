@@ -116,7 +116,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 		gameController = new RelativeLayout(this);
 		handler = new Handler();
 		
-		
+        joystick.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent motionEvent) {
+                        joystick.handleTouch(motionEvent);
+                        return true;
+                }
+        });
 		
         leftDeckFire.setOnClickListener(new View.OnClickListener() {
                 @Override

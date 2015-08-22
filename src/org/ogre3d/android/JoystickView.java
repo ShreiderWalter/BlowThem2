@@ -174,11 +174,11 @@ public class JoystickView extends View implements Runnable {
         }
     }
 
-    @Override
+    /*@Override
     public boolean onTouchEvent(MotionEvent event) {
         handleTouch(event);
         return true;
-    }
+    }*/
 
     private int getAngle() {
         if (xPosition > centerX) {
