@@ -116,6 +116,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 		gameController = new RelativeLayout(this);
 		handler = new Handler();
 		
+        Display display = getWindowManager().getDefaultDisplay();
+        final int width = display.getWidth();
+        final int height = display.getHeight();
+		
+		
+		
         joystick.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent motionEvent) {
@@ -127,37 +133,92 @@ public class MainActivity extends Activity implements SensorEventListener {
                         
                         switch(maskedAction)
                         {
+                            case MotionEvent.ACTION_MOVE:
+                                int count = motionEvent.getPointerCount();
+                                int pointerId = 0;
+                                for (int i = 0; i < count; i++) {
+                                        pointerId = motionEvent.getPointerId(i);
+                                        if(i == 0)
+                                        {
+                                            joystick.onTouchEvent(motionEvent);
+                                        }
+                                        
+                                        int location[] = new int[2];
+                                        joystick.getLocationOnScreen(location);
+
+                                        long downTime = SystemClock.uptimeMillis();
+                                        long eventTime = SystemClock.uptimeMillis() + 100;
+                                        float x = motionEvent.getX(i);
+                                        float y = motionEvent.getY(i) + location[1];
+                                        int metaState = 0;
+                                        final MotionEvent motionEventTMP = MotionEvent.obtain(
+                                            downTime, 
+                                            eventTime, 
+                                            MotionEvent.ACTION_DOWN, 
+                                            x, 
+                                            y, 
+                                            metaState
+                                        );
+                                        
+                                        
+                                        if (count > 1 && !isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick))
+                                        {
+                                            shiftDirection.x = motionEventTMP.getX() - tmp.x;
+                                            shiftDirection.y = motionEventTMP.getY() - tmp.y;
+                                            tmp.x += (motionEventTMP.getX() - tmp.x);
+                                            tmp.y += (motionEventTMP.getY() - tmp.y);
+                                            
+                                            float mainHor = width;
+                                            float shiftHor = shiftDirection.x;
+                                            shiftAngleHor = shiftHor / mainHor;
+
+                                            float mainVer = height;
+                                            float shiftVer = shiftDirection.y;
+                                            shiftAngleVer = shiftVer / mainVer;
+                                        }
+                                }
+                            break;
+                            
                             case MotionEvent.ACTION_POINTER_DOWN:
-                                    //Log.e("TRULY", "truly true");
-                                    int location[] = new int[2];
-                                    joystick.getLocationOnScreen(location);
+                                int location[] = new int[2];
+                                joystick.getLocationOnScreen(location);
 
-                                    long downTime = SystemClock.uptimeMillis();
-                                    long eventTime = SystemClock.uptimeMillis() + 100;
-                                    float x = motionEvent.getX(actionIndex);
-                                    float y = motionEvent.getY(actionIndex) + location[1];
-                                    int metaState = 0;
-                                    Log.e("LOGGING", String.valueOf(x) + " " + String.valueOf(y));
-                                    final MotionEvent motionEventTMP = MotionEvent.obtain(
-                                        downTime, 
-                                        eventTime, 
-                                        MotionEvent.ACTION_DOWN, 
-                                        x, 
-                                        y, 
-                                        metaState
-                                    );
-                                    if (isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), leftDeckFire))
-                                    {
-                                            leftDeckFire.performClick();
-                                    }
-                                    else if(isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), rightDeckFire))
-                                    {
-                                            rightDeckFire.performClick();
-                                    }
-                                    else if (!isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick))
-                                    {
+                                long downTime = SystemClock.uptimeMillis();
+                                long eventTime = SystemClock.uptimeMillis() + 100;
+                                float x = motionEvent.getX(actionIndex);
+                                float y = motionEvent.getY(actionIndex) + location[1];
+                                int metaState = 0;
+                                final MotionEvent motionEventTMP = MotionEvent.obtain(
+                                    downTime, 
+                                    eventTime, 
+                                    MotionEvent.ACTION_DOWN, 
+                                    x, 
+                                    y, 
+                                    metaState
+                                );
+                                if (isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), leftDeckFire))
+                                {
+                                        leftDeckFire.performClick();
+                                }
+                                else if(isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), rightDeckFire))
+                                {
+                                        rightDeckFire.performClick();
+                                }
+                                else if (!isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick))
+                                {
+                                        //Log.e("ACTION", "DOWN");
+                                        tmp.x = motionEventTMP.getX();
+                                        tmp.y = motionEventTMP.getY();
+                                }
+                            break;
+                            
+                            case MotionEvent.ACTION_POINTER_UP:
+                                //Log.e("ACTION", "UP");
+                                shiftDirection.x = 0;
+                                shiftDirection.y = 0;
+                                shiftAngleHor = 0.0f;
+                                shiftAngleVer = 0.0f;
 
-                                    }
                             break;
                         }
                         
@@ -190,15 +251,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 			public void onValueChanged(int angle, int power, int direction) {
 				direction_ = direction;
 			}
-		}, 0);
+        }, 0);
 		shiftDirection = new PointF(0, 0);
 		tmp = new PointF(0, 0);
 		shiftAngleHor = 0.0f;
 		shiftAngleVer = 0.0f;
-
-        Display display = getWindowManager().getDefaultDisplay();
-        final int width = display.getWidth();
-        final int height = display.getHeight();
 
 		controllerContainer.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -262,7 +319,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                                                             });
                                                         }
                                                 }
-                                                        break;
+                                                break;
 
                                                 case MotionEvent.ACTION_POINTER_DOWN:
                                                         if (isPointInsideView(motionEvent.getX(actionIndex), motionEvent.getY(actionIndex), leftDeckFire))

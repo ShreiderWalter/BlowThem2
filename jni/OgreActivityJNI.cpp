@@ -331,7 +331,7 @@ extern "C"
                 camAngleHor += (float)angleHor;
                 camAngleVer += (float)angleVer;
 
-                camXposition = sin(camAngleVer) * cos(camAngleHor) + initXposition;
+                camXposition = sin(camAngleVer) * cos(camAngleHor) + abs(initXposition);
                 camZposition = sin(camAngleVer) * sin(camAngleHor) + initZposition;
                 camYposition = cos(camAngleVer) + CAMERA_Y_POSITION;
 
