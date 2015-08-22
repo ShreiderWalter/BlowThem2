@@ -49,7 +49,7 @@ import android.util.Log;
 import android.os.SystemClock;
 
 public class MainActivity extends Activity implements SensorEventListener {
-	private int direction_ = 0;
+	private int angle_ = 0;
 
 	protected Handler handler = null;
 	protected SurfaceView surfaceView = null;
@@ -249,7 +249,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         joystick.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
 			@Override
 			public void onValueChanged(int angle, int power, int direction) {
-				direction_ = direction;
+				angle_ = angle;
 			}
         }, 0);
 		shiftDirection = new PointF(0, 0);
@@ -451,7 +451,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 							}
 
 							if (initOGRE && wndCreate) {
-								OgreActivityJNI.renderOneFrame(direction_, shiftAngleHor, shiftAngleVer);
+								OgreActivityJNI.renderOneFrame(angle_, shiftAngleHor, shiftAngleVer);
 							}
                             //Log.e("ENTERED", String.valueOf(joystick.getDirection()));
 							handler.post(this);

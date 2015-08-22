@@ -52,6 +52,11 @@ Ogre::SceneNode * wakeNode;
 
 #include <android/log.h>
 
+#define ELLIPSE_AB 200
+#define PI 3.14159265
+
+
+
 
 void * fireLeft(void *)
 {
@@ -286,7 +291,7 @@ extern "C"
     }
 	
     JNIEXPORT void JNICALL Java_org_ogre3d_android_OgreActivityJNI_renderOneFrame(JNIEnv * env, jobject obj,
-                                                                                  jint direction, jfloat angleHor, jfloat angleVer)
+                                                                                  jint angle, jfloat angleHor, jfloat angleVer)
     {
         if(gRenderWnd != nullptr && gRenderWnd->isActive())
         {
@@ -298,35 +303,18 @@ extern "C"
                 gRenderWnd->windowMovedOrResized();
                 gRoot->renderOneFrame();
 
-                int dir_ = (int) direction;
-                if(dir_ != 0)
-                {
+                int angle_ = (float) angle;
 
-                    switch(dir_)
-                    {
-                        case 1:
-                            initXposition += 1; break;
-                        case 2:
-                            initXposition += 1;
-                            initZposition -= 1; break;
-                        case 3:
-                            initZposition -= 1; break;
-                        case 4:
-                            initZposition -= 1;
-                            initXposition -= 1; break;
-                        case 5:
-                            initXposition -= 1; break;
-                        case 6:
-                            initXposition -= 1;
-                            initZposition += 1; break;
-                        case 7:
-                            initZposition += 1; break;
-                        case 8:
-                            initZposition += 1;
-                            initXposition += 1; break;
-                    }
+                float ellipse_coefficientA = 0.0f;
+                ellipse_coefficientA = angle_ / 90;
 
-                }
+                float ellipse_coefficientB = 1 - ellipse_coefficientA;
+
+                float A = ELLIPSE_AB * ellipse_coefficientA;
+                float B = ELLIPSE_AB * ellipse_coefficientB;
+
+                initXposition += A * cos(angle_ * PI / 180);
+                initZposition += B * sin(angle_ * PI / 180);
 
                 camAngleHor += (float)angleHor;
                 camAngleVer += (float)angleVer;
