@@ -176,7 +176,7 @@ public class JoystickView extends View implements Runnable {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        handleTouch(event);
+        //handleTouch(event);
         return true;
     }
 

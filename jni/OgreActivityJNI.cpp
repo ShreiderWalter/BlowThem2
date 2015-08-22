@@ -52,8 +52,10 @@ Ogre::SceneNode * wakeNode;
 
 #include <android/log.h>
 
-#define ELLIPSE_AB 200
+#define ELLIPSE_AB 3
 #define PI 3.14159265
+
+static float turningAngle = 90.0f;
 
 
 
@@ -303,7 +305,9 @@ extern "C"
                 gRenderWnd->windowMovedOrResized();
                 gRoot->renderOneFrame();
 
-                int angle_ = (float) angle;
+                float angle_ = (float) angle;
+
+                angle_ = turningAngle - angle_;
 
                 float ellipse_coefficientA = 0.0f;
                 ellipse_coefficientA = angle_ / 90;
@@ -319,8 +323,8 @@ extern "C"
                 camAngleHor += (float)angleHor;
                 camAngleVer += (float)angleVer;
 
-                camXposition = sin(camAngleVer) * cos(camAngleHor) + abs(initXposition);
-                camZposition = sin(camAngleVer) * sin(camAngleHor) + initZposition;
+                camXposition = sin(camAngleVer) * cos(camAngleHor + angle_) + abs(initXposition);
+                camZposition = sin(camAngleVer) * sin(camAngleHor + angle_) + initZposition;
                 camYposition = cos(camAngleVer) + CAMERA_Y_POSITION;
 
                 pCamera->setPosition(initXposition, CAMERA_Y_POSITION, initZposition);

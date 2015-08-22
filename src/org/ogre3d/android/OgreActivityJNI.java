@@ -33,7 +33,7 @@ public class OgreActivityJNI {
 	public native static void destroy();	
 	public native static void initWindow(Surface surface);
 	public native static void termWindow();
-	public native static void renderOneFrame(int direction, float angleHor, float angleVer);
+	public native static void renderOneFrame(int angle, float angleHor, float angleVer);
 	public native static void shootLeftDeck();
 	public native static void shootRightDeck();
 }
