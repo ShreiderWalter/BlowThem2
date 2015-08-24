@@ -138,43 +138,44 @@ public class MainActivity extends Activity implements SensorEventListener {
                                 int pointerId = 0;
                                 for (int i = 0; i < count; i++) {
                                         pointerId = motionEvent.getPointerId(i);
-                                        if(i == 0)
+                                        if(pointerId == 0)
                                         {
                                             joystick.onTouchEvent(motionEvent);
-                                        }
+                                        } else {
                                         
-                                        int location[] = new int[2];
-                                        joystick.getLocationOnScreen(location);
+                                            int location[] = new int[2];
+                                            joystick.getLocationOnScreen(location);
 
-                                        long downTime = SystemClock.uptimeMillis();
-                                        long eventTime = SystemClock.uptimeMillis() + 100;
-                                        float x = motionEvent.getX(i);
-                                        float y = motionEvent.getY(i) + location[1];
-                                        int metaState = 0;
-                                        final MotionEvent motionEventTMP = MotionEvent.obtain(
-                                            downTime, 
-                                            eventTime, 
-                                            MotionEvent.ACTION_DOWN, 
-                                            x, 
-                                            y, 
-                                            metaState
-                                        );
-                                        
-                                        
-                                        if (count > 1 && !isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick))
-                                        {
-                                            shiftDirection.x = motionEventTMP.getX() - tmp.x;
-                                            shiftDirection.y = motionEventTMP.getY() - tmp.y;
-                                            tmp.x += (motionEventTMP.getX() - tmp.x);
-                                            tmp.y += (motionEventTMP.getY() - tmp.y);
+                                            long downTime = SystemClock.uptimeMillis();
+                                            long eventTime = SystemClock.uptimeMillis() + 100;
+                                            float x = motionEvent.getX(i);
+                                            float y = motionEvent.getY(i) + location[1];
+                                            int metaState = 0;
+                                            final MotionEvent motionEventTMP = MotionEvent.obtain(
+                                                downTime, 
+                                                eventTime, 
+                                                MotionEvent.ACTION_DOWN, 
+                                                x, 
+                                                y, 
+                                                metaState
+                                            );
                                             
-                                            float mainHor = width;
-                                            float shiftHor = shiftDirection.x;
-                                            shiftAngleHor = shiftHor / mainHor;
+                                            
+                                            if (count > 1 && !isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick))
+                                            {
+                                                shiftDirection.x = motionEventTMP.getX() - tmp.x;
+                                                shiftDirection.y = motionEventTMP.getY() - tmp.y;
+                                                tmp.x += (motionEventTMP.getX() - tmp.x);
+                                                tmp.y += (motionEventTMP.getY() - tmp.y);
+                                                
+                                                float mainHor = width;
+                                                float shiftHor = shiftDirection.x;
+                                                shiftAngleHor = shiftHor / mainHor;
 
-                                            float mainVer = height;
-                                            float shiftVer = shiftDirection.y;
-                                            shiftAngleVer = shiftVer / mainVer;
+                                                float mainVer = height;
+                                                float shiftVer = shiftDirection.y;
+                                                shiftAngleVer = shiftVer / mainVer;
+                                            }
                                         }
                                 }
                             break;

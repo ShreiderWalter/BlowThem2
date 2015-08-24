@@ -1,4 +1,4 @@
-#include "shadergeneratortechniqueresolverlistener.h"
+﻿#include "shadergeneratortechniqueresolverlistener.h"
 
 static Ogre::RTShader::ShaderGenerator * mShaderGenerator = nullptr;         // The Shader generator instance.
 static ShaderGeneratorTechniqueResolverListener * gMatListener = nullptr;      // Shader generator material manager listener.
@@ -52,10 +52,11 @@ Ogre::SceneNode * wakeNode;
 
 #include <android/log.h>
 
-#define ELLIPSE_AB 3
+static const float ELLIPSE_AB = 2.5f;
+static const float angle_coefficient = 1.8f;
 #define PI 3.14159265
 
-static float turningAngle = 90.0f;
+static float turningAngle = 0.0f;
 
 
 
@@ -307,24 +308,58 @@ extern "C"
 
                 float angle_ = (float) angle;
 
-                angle_ = turningAngle - angle_;
+                //__android_log_print(ANDROID_LOG_VERBOSE, "ANGLE", to_string(angle_).c_str(), 1);
+                if((angle_ <= 90 && angle_ > 30) || (angle_ >= -90 && angle_ < -30))
+                {
+                    float ellipse_coefficientA = 0.0f;
+                    ellipse_coefficientA = angle_ / 90;
 
-                float ellipse_coefficientA = 0.0f;
-                ellipse_coefficientA = angle_ / 90;
+                    float ellipse_coefficientB = 1 - abs(ellipse_coefficientA);
+                    ellipse_coefficientA *= 2;
 
-                float ellipse_coefficientB = 1 - ellipse_coefficientA;
+                    float A = ELLIPSE_AB * ellipse_coefficientA;
+                    float B = ELLIPSE_AB * ellipse_coefficientB;
 
-                float A = ELLIPSE_AB * ellipse_coefficientA;
-                float B = ELLIPSE_AB * ellipse_coefficientB;
+                    if(angle_ > 0)
+                    {
+                        initZposition -= A * cos(angle_ * PI / 180);
+                        initXposition += B * sin(angle_ * PI / 180);
+                    }
+                    else
+                    {
+                        initZposition += A * cos(angle_ * PI / 180);
+                        initXposition += B * sin(angle_ * PI / 180);
 
-                initXposition += A * cos(angle_ * PI / 180);
-                initZposition += B * sin(angle_ * PI / 180);
+                    }
+                }
+                else if((angle_ <= 30 && angle_ > 0) || (angle_ >= -30 && angle_ < 0))
+                {
+                    float ellipse_coefficientB = 0.0f;
+                    ellipse_coefficientB = angle_ / 30;
+
+                    float ellipse_coefficientA = 1 - abs(ellipse_coefficientB);
+                    ellipse_coefficientB *= 2;
+
+                    float A = ELLIPSE_AB * ellipse_coefficientA;
+                    float B = ELLIPSE_AB * ellipse_coefficientB;
+
+                    if(angle_ >= 0)
+                    {
+                        initZposition -= A * cos(angle_ * PI / 180);
+                        initXposition += B * sin(angle_ * PI / 180);
+                    }
+                    else
+                    {
+                        initZposition -= A * cos(angle_ * PI / 180);
+                        initXposition -= B * sin(angle_ * PI / 180);
+                    }
+                }
 
                 camAngleHor += (float)angleHor;
                 camAngleVer += (float)angleVer;
 
-                camXposition = sin(camAngleVer) * cos(camAngleHor + angle_) + abs(initXposition);
-                camZposition = sin(camAngleVer) * sin(camAngleHor + angle_) + initZposition;
+                camXposition = sin(camAngleVer) * cos(camAngleHor) + initXposition;
+                camZposition = sin(camAngleVer) * sin(camAngleHor) + initZposition;
                 camYposition = cos(camAngleVer) + CAMERA_Y_POSITION;
 
                 pCamera->setPosition(initXposition, CAMERA_Y_POSITION, initZposition);
