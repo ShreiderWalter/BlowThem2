@@ -14,6 +14,7 @@ public:
     void setEmittingLeft(bool);
     void setEmittingRight(bool);
     void setCurrentPosition(Ogre::Vector3);
+    void setTurningAngle(int degree);
 };
 
 #endif // DUTCHFRIGATE_H

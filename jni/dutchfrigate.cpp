@@ -57,3 +57,8 @@ void DutchFrigate::setCurrentPosition(Ogre::Vector3 currentPosition)
     shipNode->setPosition(currentPosition);
 }
 
+void DutchFrigate::setTurningAngle(int degree)
+{
+    shipNode->yaw(Ogre::Degree(-degree));
+}
+

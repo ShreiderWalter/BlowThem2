@@ -365,6 +365,7 @@ extern "C"
                 pCamera->setPosition(initXposition, CAMERA_Y_POSITION, initZposition);
                 pCamera->lookAt(camXposition, camYposition, camZposition);
 
+                playersShip->setTurningAngle(angle_);
                 playersShip->setCurrentPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
                 wakeNode->setPosition(Ogre::Vector3(initXposition + 19, -19, initZposition - VESSEL_Z_DISTATION + 20));
 

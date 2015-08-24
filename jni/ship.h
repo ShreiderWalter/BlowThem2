@@ -28,6 +28,7 @@ public:
     virtual void setEmittingLeft(bool) = 0;
     virtual void setEmittingRight(bool) = 0;
     virtual void setCurrentPosition(Ogre::Vector3) = 0;
+    virtual void setTurningAngle(int degree) = 0;
 };
 
 #endif // SHIP_H
