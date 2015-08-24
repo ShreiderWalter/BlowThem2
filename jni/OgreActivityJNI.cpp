@@ -57,6 +57,7 @@ static const float angle_coefficient = 1.8f;
 #define PI 3.14159265
 
 static float turningAngle = 0.0f;
+static int initTurningVessel = 0;
 
 
 
@@ -322,6 +323,7 @@ extern "C"
 
                     if(angle_ > 0)
                     {
+                        initTurningVessel -= angle_;
                         initZposition -= A * cos(angle_ * PI / 180);
                         initXposition += B * sin(angle_ * PI / 180);
                     }
@@ -365,7 +367,11 @@ extern "C"
                 pCamera->setPosition(initXposition, CAMERA_Y_POSITION, initZposition);
                 pCamera->lookAt(camXposition, camYposition, camZposition);
 
-                playersShip->setTurningAngle(angle_);
+                if(initTurningVessel != angle_)
+                {
+                    playersShip->setTurningAngle(initTurningVessel);
+                }
+                initTurningVessel = angle_;
                 playersShip->setCurrentPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
                 wakeNode->setPosition(Ogre::Vector3(initXposition + 19, -19, initZposition - VESSEL_Z_DISTATION + 20));
 

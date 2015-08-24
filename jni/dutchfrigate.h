@@ -8,6 +8,7 @@ class DutchFrigate : public Ship
 private:
     Ogre::Entity * dutchFrigate;
     std::vector<Ogre::ParticleSystem *> cannonFire;
+    int currentTurn, prevousTurn;
 public:
     DutchFrigate(Ogre::SceneManager * pSceneMgr, Ogre::Vector3 initialPosition, int leftCannons, int rightCannons);
     void setEmitting(bool);

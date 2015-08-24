@@ -9,7 +9,8 @@ DutchFrigate::DutchFrigate(Ogre::SceneManager * pSceneMgr, Ogre::Vector3 initial
 {
     dutchFrigate = pSceneMgr->createEntity("DutchFrigate", "Ship.mesh");
     shipNode->attachObject(dutchFrigate);
-
+    currentTurn = 0;
+    prevousTurn = 0;
 
     for(size_t i = 0; i < 18; ++i)
     {
@@ -23,8 +24,6 @@ DutchFrigate::DutchFrigate(Ogre::SceneManager * pSceneMgr, Ogre::Vector3 initial
         cannonFire.push_back(pSceneMgr->createParticleSystem("CannonPXR" + to_string(i + 1), "Examples/FireRight"
                                                              + to_string(i + 1)));
         shipNode->attachObject(cannonFire.at(i + 18));
-        __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "RIGHT FIRE ADDED", 1);
-
     }
 }
 
@@ -59,6 +58,6 @@ void DutchFrigate::setCurrentPosition(Ogre::Vector3 currentPosition)
 
 void DutchFrigate::setTurningAngle(int degree)
 {
-    shipNode->yaw(Ogre::Degree(-degree));
+    shipNode->roll(Ogre::Degree(currentTurn - degree));
 }
 
