@@ -161,7 +161,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                                             );
                                             
                                             
-                                            if (count > 1 && !isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick))
+                                            if (count > 1 && !isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), joystick)
+                                            && !isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), leftDeckFire)
+                                            && !isPointInsideView(motionEventTMP.getX(), motionEventTMP.getY(), rightDeckFire))
                                             {
                                                 shiftDirection.x = motionEventTMP.getX() - tmp.x;
                                                 shiftDirection.y = motionEventTMP.getY() - tmp.y;
