@@ -1,6 +1,4 @@
 ﻿#include "shadergeneratortechniqueresolverlistener.h"
-#include "WaterMesh.h"
-#include "WaterCircle.h"
 
 static Ogre::RTShader::ShaderGenerator * mShaderGenerator = nullptr;         // The Shader generator instance.
 static ShaderGeneratorTechniqueResolverListener * gMatListener = nullptr;      // Shader generator material manager listener.
@@ -44,15 +42,6 @@ static int vesselAngle = 0;
 
 /** Player's vessel node */
 DutchFrigate * playersShip;
-Ogre::SceneNode * wakeNode;
-
-/** New water probe */
-WaterMesh * waterMesh;
-Entity * waterEntity;
-AnimationState * mAnimState;
-Overlay * waterOverlay;
-ParticleSystem * particleSystem ;
-ParticleEmitter * particleEmitter ;
 
 /** Particle system for cannon shot */
 //ParticleSystem * blowParticle;
@@ -67,20 +56,85 @@ static const float ELLIPSE_AB = 2.5f;
 static const float angle_coefficient = 1.8f;
 #define PI 3.14159265
 
+/** Physics elementary provided by bullet library */
 
+static Ogre::Entity * cannonEnt;
+int m_NumEntities = 0;
+btDiscreteDynamicsWorld * world;
+std::vector<btRigidBody *> objects;
+
+void createCannon(const btVector3 & position, btScalar Mass)
+{
+    Ogre::Vector3 size = Ogre::Vector3::ZERO;
+    Ogre::Vector3 pos = Ogre::Vector3::ZERO;
+
+    pos.x = position.getX();
+    pos.y = position.getY();
+    pos.z = position.getZ();
+
+    cannonEnt = pSceneMgr->createEntity("_Ball_1" + to_string(m_NumEntities),
+                                                                "Sphere.mesh");
+
+    cannonEnt->setCastShadows(true);
+    Ogre::AxisAlignedBox boundingBox = cannonEnt->getBoundingBox();
+    size = boundingBox.getSize() * 0.95f;
+    Ogre::SceneNode * tmpNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+    tmpNode->attachObject(cannonEnt);
+    tmpNode->setPosition(pos);
+
+    /** Physics */
+    btTransform transform;
+    transform.setIdentity();
+    transform.setOrigin(position);
+    btDefaultMotionState * motionState = new btDefaultMotionState(transform);
+    btVector3 halfExtents(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f);
+    btCollisionShape * shape = new btBoxShape(halfExtents);
+    btVector3 localInertia;
+    shape->calculateLocalInertia(Mass, localInertia);
+    btRigidBody * rigitBody = new btRigidBody(Mass, motionState, shape, localInertia);
+    rigitBody->setUserPointer((void *) tmpNode);
+    world->addRigidBody(rigitBody);
+    objects.push_back(rigitBody);
+    ++m_NumEntities;
+}
+
+void clearObjects()
+{
+    objects.clear();
+}
+
+void updatePhysics(unsigned int deltaTime)
+{
+    world->stepSimulation(deltaTime * 0.1f, 60);
+    btRigidBody *tObject;
+    for(std::vector<btRigidBody *>::iterator it = objects.begin(); it != objects.end(); ++it)
+    {
+        Ogre::SceneNode * tmpNode = static_cast<Ogre::SceneNode *>((*it)->getUserPointer());
+        tObject = *it;
+
+        btVector3 point = tObject->getCenterOfMassPosition();
+        tmpNode->setPosition(Ogre::Vector3((float)point[0], (float)point[1], (float)point[2]));
+        btQuaternion btq = tObject->getOrientation();
+        Ogre::Quaternion quart = Ogre::Quaternion(btq.w(), btq.x(), btq.y(), btq.z());
+        tmpNode->setOrientation(quart);
+    }
+}
+//Physics_END
 
 void * fireLeft(void *)
 {
-    playersShip->setEmittingLeft(true);
-    usleep(300000);
-    playersShip->setEmittingLeft(false);
+    //playersShip->setEmittingLeft(true);
+    //usleep(300000);
+    //playersShip->setEmittingLeft(false);
 }
 
 void * fireRight(void *)
 {
-    playersShip->setEmittingRight(true);
-    usleep(300000);
-    playersShip->setEmittingRight(false);
+    createCannon(btVector3(initXposition, 100, initZposition - VESSEL_Z_DISTATION), 10);
+
+    //playersShip->setEmittingRight(true);
+    //usleep(300000);
+    //playersShip->setEmittingRight(false);
 }
 
 static Ogre::DataStreamPtr openAPKFile(const Ogre::String& fileName)
@@ -171,6 +225,7 @@ extern "C"
 
         OGRE_DELETE gGLESPlugin;
         gGLESPlugin = nullptr;
+        clearObjects();
 
         //OGRE_DELETE playersShip;
         //playersShip = nullptr;
@@ -253,23 +308,37 @@ extern "C"
                         waterNode->attachObject(mOgreSurfaceEntity);
                         mOgreSurfaceEntity->setMaterialName("Ocean2_HLSL_GLSL");
 
-                        /*waterMesh = new WaterMesh(MESH_NAME, PLANE_SIZE, COMPLEXITY);
-                        waterEntity = pSceneMgr->createEntity(ENTITY_NAME, MESH_NAME);
-                        SceneNode * waterNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
-                        waterEntity->setMaterialName("Ocean2_HLSL_GLSL");
-                        waterNode->attachObject(waterEntity);*/
+                        /** init physics */
+                        btBroadphaseInterface * broadPhase = new btAxisSweep3(btVector3(-1000, -1000, -1000),
+                                                                              btVector3(1000, 1000, 1000));
+                        btDefaultCollisionConfiguration * collisionConfiguration = new btDefaultCollisionConfiguration;
+                        btCollisionDispatcher * dispatcher = new btCollisionDispatcher(collisionConfiguration);
+                        btSequentialImpulseConstraintSolver * solver = new btSequentialImpulseConstraintSolver;
+                        world = new btDiscreteDynamicsWorld(dispatcher, broadPhase, solver, collisionConfiguration);
 
+                        /** physics of the plane */
+                        btTransform transform;
+                        transform.setIdentity();
+                        transform.setOrigin(btVector3(0, 0, 0));
+                        btDefaultMotionState *motionState = new btDefaultMotionState(transform);
+                        btCollisionShape * shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+                        btVector3 localInertia;
+                        shape->calculateLocalInertia(0, localInertia);
+                        btRigidBody * rigidBody = new btRigidBody(0, motionState, shape, localInertia);
+                        rigidBody->setUserPointer((void *) waterNode);
+                        world->addRigidBody(rigidBody);
+                        objects.push_back(rigidBody);
+                        ++m_NumEntities;
+                        //end of physics
 
-                        playersShip = new DutchFrigate(pSceneMgr,
+                        pSceneMgr->createEntity("_Ball_" + to_string(m_NumEntities),
+                                                                           "Sphere.mesh");
+
+                        /*playersShip = new DutchFrigate(pSceneMgr,
                                                        Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION),
                                                        21, 18);
 
-
-                        /*wakeNode = waterNode->createChildSceneNode("WakeParticle");
-                        ParticleSystem * wakeParticle = pSceneMgr->createParticleSystem("Wake", "Water/Wake");
-                        wakeNode->attachObject(wakeParticle);*/
-
-                        playersShip->setEmitting(false);
+                        playersShip->setEmitting(false);*/
 
 
                         Ogre::RTShader::ShaderGenerator::getSingletonPtr()->invalidateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
@@ -402,11 +471,10 @@ extern "C"
 
                 if(angle_ != 0)
                 {
-                    playersShip->setTurningAngle(turningAngle);
-                    wakeNode->roll(Ogre::Degree(turningAngle));
+                    //playersShip->setTurningAngle(turningAngle);
                 }
-                playersShip->setCurrentPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
-                //wakeNode->setPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
+                updatePhysics(1);
+                //playersShip->setCurrentPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
                 //gVM->DetachCurrentThread();
             }
             catch(Ogre::RenderingAPIException ex) {}

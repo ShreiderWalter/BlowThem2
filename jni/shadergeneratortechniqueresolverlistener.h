@@ -23,6 +23,7 @@
 #include <pthread.h>
 
 #include "dutchfrigate.h"
+#include <btBulletDynamicsCommon.h>
 
 //#include "Caelum.h"
 //#include "CaelumSystem.h"
