@@ -26,7 +26,6 @@
 
 //#include "Caelum.h"
 //#include "CaelumSystem.h"
-//#include "Hydrax.h"
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #	include "OgreOctreePlugin.h"

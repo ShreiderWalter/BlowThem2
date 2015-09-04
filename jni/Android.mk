@@ -14,18 +14,29 @@ LOCAL_PATH := $(call my-dir)
     LOCAL_CFLAGS += -I/home/walter/Android/OgreSource/ogre/PlugIns/ParticleFX/include -I/home/walter/Android/OgreSource/ogre/PlugIns/OctreeSceneManager/include 
     LOCAL_CFLAGS += -I/home/walter/Android/OgreSource/ogre/AndroidDependencies/include -I/home/walter/Android/OgreSource/ogre/AndroidDependencies/include/OIS -I/home/walter/Android/OgreSource/ogre/build/Samples/include
     LOCAL_CFLAGS += -fexceptions -frtti -x c++ -D___ANDROID___ -DANDROID -DZZIP_OMIT_CONFIG_H -DINCLUDE_RTSHADER_SYSTEM=1 -std=c++11
-    #LOCAL_CFLAGS += -I/home/walter/Caelum/caelum/main/include -I/home/walter/Hydrax/CommunityHydrax/include
     
-    #CAELUM_PATH := ../../../../../../Caelum/caelum/main/src
-    #PROJECT_FILES := $(wildcard $(LOCAL_PATH)/$(CAELUM_PATH)/*.cpp)
-    #LOCAL_SRC_FILES := $(PROJECT_FILES:$(LOCAL_PATH)/%=%)
+    #hydrax
+    #LOCAL_CFLAGS += -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax/Modules -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax/Modules/ProjectedGrid -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax/Modules/RadialGrid -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax/Modules/SimpleGrid -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax/Noise -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax/Noise/FFT -I/home/walter/Android/OgreSource/HydraX/Hydrax/src/Hydrax/Noise/Perlin
     
-    #HYDRAX_PATH := ../../../../../../Hydrax/CommunityHydrax/src
-    #PROJECT_FILES := $(wildcard $(LOCAL_PATH)/$(HYDRAX_PATH)/*.cpp)
-    #LOCAL_SRC_FILES += $(PROJECT_FILES:$(LOCAL_PATH)/%=%)
+    
+    #HYDRAX_PATH := ../../../../HydraX/Hydrax/src/Hydrax
+    #PROJECT_FILES1 := $(wildcard $(LOCAL_PATH)/$(HYDRAX_PATH)/*.cpp)
+    #LOCAL_SRC_FILES += $(PROJECT_FILES1:$(LOCAL_PATH)/%=%)
+    
+    #HYDRAX_NOISE_MODULES_PATH := ../../../../HydraX/Hydrax/src/Hydrax/*
+    #PROJECT_FILES2 := $(wildcard $(LOCAL_PATH)/$(HYDRAX_NOISE_MODULES_PATH)/*.cpp)
+    #LOCAL_SRC_FILES += $(PROJECT_FILES2:$(LOCAL_PATH)/%=%)
+    
+    #HYDRAX_NOISE_SUBPATH := ../../../../HydraX/Hydrax/src/Hydrax/Noise/*
+    #PROJECT_FILES3 := $(wildcard $(LOCAL_PATH)/$(HYDRAX_NOISE_SUBPATH)/*.cpp)
+    #LOCAL_SRC_FILES += $(PROJECT_FILES3:$(LOCAL_PATH)/%=%)
+    
+    #HYDRAX_MODULES_SUBPATH := ../../../../HydraX/Hydrax/src/Hydrax/Modules/*
+    #PROJECT_FILES4 := $(wildcard $(LOCAL_PATH)/$(HYDRAX_MODULES_SUBPATH)/*.cpp)
+    #LOCAL_SRC_FILES += $(PROJECT_FILES4:$(LOCAL_PATH)/%=%)
     
 	LOCAL_PATH := /home/walter/Android/OgreSource/ogre/build/OgreJNI/jni
-	LOCAL_SRC_FILES += dutchfrigate.cpp ship.cpp OgreActivityJNI.cpp
+	LOCAL_SRC_FILES += WaterMesh.cpp dutchfrigate.cpp ship.cpp OgreActivityJNI.cpp
 	        
     include $(BUILD_SHARED_LIBRARY) 
       

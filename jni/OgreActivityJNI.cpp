@@ -1,4 +1,6 @@
 ﻿#include "shadergeneratortechniqueresolverlistener.h"
+#include "WaterMesh.h"
+#include "WaterCircle.h"
 
 static Ogre::RTShader::ShaderGenerator * mShaderGenerator = nullptr;         // The Shader generator instance.
 static ShaderGeneratorTechniqueResolverListener * gMatListener = nullptr;      // Shader generator material manager listener.
@@ -6,8 +8,8 @@ static ShaderGeneratorTechniqueResolverListener * gMatListener = nullptr;      /
 using namespace Ogre;
 
 static bool gInit = false;
-static Ogre::Root* gRoot = nullptr;
-static Ogre::RenderWindow* gRenderWnd = nullptr;
+static Ogre::Root * gRoot = nullptr;
+static Ogre::RenderWindow * gRenderWnd = nullptr;
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 static Ogre::OctreePlugin* gOctreePlugin = nullptr;
@@ -44,6 +46,13 @@ static int vesselAngle = 0;
 DutchFrigate * playersShip;
 Ogre::SceneNode * wakeNode;
 
+/** New water probe */
+WaterMesh * waterMesh;
+Entity * waterEntity;
+AnimationState * mAnimState;
+Overlay * waterOverlay;
+ParticleSystem * particleSystem ;
+ParticleEmitter * particleEmitter ;
 
 /** Particle system for cannon shot */
 //ParticleSystem * blowParticle;
@@ -63,18 +72,14 @@ static const float angle_coefficient = 1.8f;
 void * fireLeft(void *)
 {
     playersShip->setEmittingLeft(true);
-    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "SLEEPED", 1);
     usleep(300000);
-    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "WOKE UP", 1);
     playersShip->setEmittingLeft(false);
 }
 
 void * fireRight(void *)
 {
     playersShip->setEmittingRight(true);
-    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "SLEEPED", 1);
     usleep(300000);
-    __android_log_print(ANDROID_LOG_VERBOSE, "BLOW_THEM", "WOKE UP", 1);
     playersShip->setEmittingRight(false);
 }
 
@@ -235,6 +240,7 @@ extern "C"
                         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.3, 0.3, 0.5));
                         pSceneMgr->setSkyBox(true, "SkyBox", 1000);
 
+
                         Ogre::Plane oceanSurface;
                         oceanSurface.normal = Ogre::Vector3::UNIT_Y;
                         oceanSurface.d = 20;
@@ -246,6 +252,13 @@ extern "C"
                         Ogre::SceneNode * waterNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
                         waterNode->attachObject(mOgreSurfaceEntity);
                         mOgreSurfaceEntity->setMaterialName("Ocean2_HLSL_GLSL");
+
+                        /*waterMesh = new WaterMesh(MESH_NAME, PLANE_SIZE, COMPLEXITY);
+                        waterEntity = pSceneMgr->createEntity(ENTITY_NAME, MESH_NAME);
+                        SceneNode * waterNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+                        waterEntity->setMaterialName("Ocean2_HLSL_GLSL");
+                        waterNode->attachObject(waterEntity);*/
+
 
                         playersShip = new DutchFrigate(pSceneMgr,
                                                        Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION),
@@ -333,13 +346,13 @@ extern "C"
 
                     if(angle_ > 0)
                     {
-                        initZposition -= A * cos(angle_ * PI / 180);
-                        initXposition += B * sin(angle_ * PI / 180);
+                        initZposition -= A * cos(angle_ * PI / 180) / 2;
+                        initXposition += B * sin(angle_ * PI / 180) / 2;
                     }
                     else
                     {
-                        initZposition += A * cos(angle_ * PI / 180);
-                        initXposition += B * sin(angle_ * PI / 180);
+                        initZposition += A * cos(angle_ * PI / 180) / 2;
+                        initXposition += B * sin(angle_ * PI / 180) / 2;
                     }
                 }
                 else if((angle_ <= 30 && angle_ > 0) || (angle_ >= -30 && angle_ < 0))
@@ -367,13 +380,13 @@ extern "C"
 
                     if(angle_ >= 0)
                     {
-                        initZposition -= A * cos(angle_ * PI / 180);
-                        initXposition += B * sin(angle_ * PI / 180);
+                        initZposition -= A * cos(angle_ * PI / 180) / 2;
+                        initXposition += B * sin(angle_ * PI / 180) / 2;
                     }
                     else
                     {
-                        initZposition -= A * cos(angle_ * PI / 180);
-                        initXposition -= B * sin(angle_ * PI / 180);
+                        initZposition -= A * cos(angle_ * PI / 180) / 2;
+                        initXposition -= B * sin(angle_ * PI / 180) / 2;
                     }
                 }
 
@@ -388,10 +401,12 @@ extern "C"
                 pCamera->lookAt(camXposition, camYposition, camZposition);
 
                 if(angle_ != 0)
+                {
                     playersShip->setTurningAngle(turningAngle);
+                    wakeNode->roll(Ogre::Degree(turningAngle));
+                }
                 playersShip->setCurrentPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
-                //wakeNode->setPosition(Ogre::Vector3(initXposition + 19, -19, initZposition - VESSEL_Z_DISTATION + 20));
-
+                //wakeNode->setPosition(Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION));
                 //gVM->DetachCurrentThread();
             }
             catch(Ogre::RenderingAPIException ex) {}
