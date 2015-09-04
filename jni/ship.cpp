@@ -13,7 +13,6 @@ Ship::Ship(Ogre::SceneManager * pSceneMgr, float x, float y, float z,
     for(size_t i = 0; i < res; ++i)
     {
         cannonNodes.push_back(shipNode->createChildSceneNode());
-        //cannonNodes.at(i)->setPosition(100, 100, 100);
         cannonNodes.at(i)->pitch(Ogre::Degree(90));
         cannonNodes.at(i)->roll(Ogre::Degree(165));
 
@@ -24,3 +23,7 @@ Ship::Ship(Ogre::SceneManager * pSceneMgr, float x, float y, float z,
     }
 }
 
+std::vector<Ogre::Entity *> Ship::getCannonBalls() const
+{
+    return cannonEntities;
+}

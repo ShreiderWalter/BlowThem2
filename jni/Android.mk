@@ -35,7 +35,7 @@ LOCAL_PATH := $(call my-dir)
     
     
     LOCAL_PATH := /home/walter/Android/OgreSource/ogre/build/OgreJNI/jni
-    LOCAL_SRC_FILES += WaterMesh.cpp dutchfrigate.cpp ship.cpp OgreActivityJNI.cpp
+    LOCAL_SRC_FILES += dutchfrigate.cpp ship.cpp OgreActivityJNI.cpp
 	        
     include $(BUILD_SHARED_LIBRARY) 
       
