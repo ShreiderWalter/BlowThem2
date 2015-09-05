@@ -59,12 +59,14 @@ static const float angle_coefficient = 1.8f;
 /** Physics elementary provided by bullet library */
 
 static Ogre::Entity * cannonEnt;
-int m_NumEntities = 0;
 btDiscreteDynamicsWorld * world;
 std::vector<btRigidBody *> objects;
 int shipWidth = 0;
+std::vector<Ogre::SceneNode *> leftCannonBallNodes;
+std::vector<Ogre::SceneNode *> rightCannonBallNodes;
 
-void createCannon(const btVector3 & position, btScalar Mass, const btVector3 & initFire, const btVector3 & endFire,
+void createCannon(Ogre::SceneNode * tmpNode, const btVector3 & position, btScalar Mass, const btVector3 & initFire,
+                  const btVector3 & endFire,
                   float factorForce)
 {
     Ogre::Vector3 size = Ogre::Vector3::ZERO;
@@ -74,10 +76,7 @@ void createCannon(const btVector3 & position, btScalar Mass, const btVector3 & i
     pos.y = position.getY();
     pos.z = position.getZ();
 
-    Ogre::SceneNode * tmpNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
-
-    Ogre::Entity * cannonEnt = pSceneMgr->createEntity("Ball_" + to_string(m_NumEntities), "Sphere.mesh");
-    tmpNode->attachObject(cannonEnt);
+    Ogre::Entity * cannonEnt = static_cast<Ogre::Entity *>(tmpNode->getAttachedObject(0));
     Ogre::AxisAlignedBox boundingBox = cannonEnt->getBoundingBox();
     size = boundingBox.getSize() * 0.95f;
     tmpNode->setPosition(pos);
@@ -96,7 +95,6 @@ void createCannon(const btVector3 & position, btScalar Mass, const btVector3 & i
     rigitBody->setUserPointer((void *) tmpNode);
     world->addRigidBody(rigitBody);
     objects.push_back(rigitBody);
-    ++m_NumEntities;
 }
 
 void clearObjects()
@@ -110,14 +108,17 @@ void updatePhysics(unsigned int deltaTime)
     btRigidBody *tObject;
     for(std::vector<btRigidBody *>::iterator it = objects.begin(); it != objects.end(); ++it)
     {
-        Ogre::SceneNode * tmpNode = static_cast<Ogre::SceneNode *>((*it)->getUserPointer());
-        tObject = *it;
+        if((*it)->getUserPointer() != nullptr)
+        {
+            Ogre::SceneNode * tmpNode = static_cast<Ogre::SceneNode *>((*it)->getUserPointer());
+            tObject = *it;
 
-        btVector3 point = tObject->getCenterOfMassPosition();
-        tmpNode->setPosition(Ogre::Vector3((float)point[0], (float)point[1], (float)point[2]));
-        btQuaternion btq = tObject->getOrientation();
-        Ogre::Quaternion quart = Ogre::Quaternion(btq.w(), btq.x(), btq.y(), btq.z());
-        tmpNode->setOrientation(quart);
+            btVector3 point = tObject->getCenterOfMassPosition();
+            tmpNode->setPosition(Ogre::Vector3((float)point[0], (float)point[1], (float)point[2]));
+            btQuaternion btq = tObject->getOrientation();
+            Ogre::Quaternion quart = Ogre::Quaternion(btq.w(), btq.x(), btq.y(), btq.z());
+            tmpNode->setOrientation(quart);
+        }
     }
 }
 //Physics_END
@@ -125,13 +126,24 @@ void updatePhysics(unsigned int deltaTime)
 void * fireLeft(void *)
 {
     std::vector<Ogre::Entity *> c_balls = playersShip->getCannonBalls();
-    for(int i = 0; i < 21; ++i)
-    {
+    Ogre::Vector3 orientation = playersShip->getOrientation();
+    orientation.normalise();
+    int degree = -55;
+    Ogre::Vector2 tmp(orientation.z * cos(degree * PI / 180) - orientation.x * sin(degree * PI / 180),
+                      orientation.z * sin(degree * PI / 180) + orientation.x * cos(degree * PI / 180));
 
+    /*std::string msg = "!!!APP \t x : " + to_string(orientation.x);
+    __android_log_print(ANDROID_LOG_VERBOSE, msg.c_str(), "");
+    msg = "!!!APP \t y : " + to_string(orientation.y);
+    __android_log_print(ANDROID_LOG_VERBOSE, msg.c_str(), "");
+    msg = "!!!APP \t z : " + to_string(orientation.z);
+    __android_log_print(ANDROID_LOG_VERBOSE, msg.c_str(), "");*/
+    for(int i = 0; i < 18; ++i)
+    {
         Ogre::Vector3 center = c_balls.at(i)->getWorldBoundingBox().getCenter();
-        createCannon(btVector3(center.x, center.y, center.z),
-                     10, btVector3(-1, 1, 0),
-                     btVector3(-1, 0, 0), 5000.0f);
+        createCannon(leftCannonBallNodes.at(i), btVector3(center.x, center.y, center.z),
+                     10, btVector3(tmp.x, -orientation.y, -tmp.y),
+                     btVector3(tmp.x, 0, -tmp.y), 10000.0f);
     }
 
     playersShip->setEmittingLeft(true);
@@ -141,8 +153,19 @@ void * fireLeft(void *)
 
 void * fireRight(void *)
 {
-    //createCannon(btVector3(initXposition, 100, initZposition - VESSEL_Z_DISTATION), 30, btVector3(1, 1, 0),
-    //             btVector3(1, 0, 0), 5000.0f);
+    std::vector<Ogre::Entity *> c_balls = playersShip->getCannonBalls();
+    Ogre::Vector3 orientation = playersShip->getOrientation();
+    orientation.normalise();
+    int degree = -55;
+    Ogre::Vector2 tmp(orientation.z * cos(degree * PI / 180) - orientation.x * sin(degree * PI / 180),
+                      orientation.z * sin(degree * PI / 180) + orientation.x * cos(degree * PI / 180));
+    for(int i = 0; i < 18; ++i)
+    {
+        Ogre::Vector3 center = c_balls.at(i + 21)->getWorldBoundingBox().getCenter();
+        createCannon(rightCannonBallNodes.at(i), btVector3(center.x, center.y, center.z),
+                     10, btVector3(-tmp.x, -orientation.y, tmp.y),
+                     btVector3(-tmp.x, 0, tmp.y), 10000.0f);
+    }
 
     playersShip->setEmittingRight(true);
     usleep(300000);
@@ -340,12 +363,18 @@ extern "C"
                         rigidBody->setUserPointer((void *) waterNode);
                         world->addRigidBody(rigidBody);
                         objects.push_back(rigidBody);
-                        ++m_NumEntities;
                         //end of physics
 
-                        pSceneMgr->createEntity("Ball" + to_string(m_NumEntities), "Sphere.mesh");
-                        shipWidth = pSceneMgr->createEntity("Ship" + to_string(m_NumEntities), "Ship.mesh")->
-                                getBoundingBox().getSize().z;
+                        for(int i = 0; i < 18; ++i)
+                        {
+                            leftCannonBallNodes.push_back(pSceneMgr->getRootSceneNode()->createChildSceneNode());
+                            Ogre::Entity * cannonEnt = pSceneMgr->createEntity("LeftBall_" + to_string(i), "Sphere.mesh");
+                            leftCannonBallNodes.at(i)->attachObject(cannonEnt);
+
+                            rightCannonBallNodes.push_back(pSceneMgr->getRootSceneNode()->createChildSceneNode());
+                            cannonEnt = pSceneMgr->createEntity("RightBall_" + to_string(i), "Sphere.mesh");
+                            rightCannonBallNodes.at(i)->attachObject(cannonEnt);
+                        }
 
                         playersShip = new DutchFrigate(pSceneMgr,
                                                        Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION),

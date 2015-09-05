@@ -27,3 +27,9 @@ std::vector<Ogre::Entity *> Ship::getCannonBalls() const
 {
     return cannonEntities;
 }
+
+Ogre::Vector3 Ship::getOrientation() const
+{
+    Ogre::Vector3 orientation = shipNode->getOrientation() * Ogre::Vector3(1, 1, 1);
+    return orientation;
+}
