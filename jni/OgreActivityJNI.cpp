@@ -73,6 +73,10 @@ void fireDeckLeftSide(btScalar Mass,
                   const btVector3 & endFire,
                   float factorForce)
 {
+    for(auto &i : objects_balls_left)
+    {
+        world->removeRigidBody(i);
+    }
     clearObjects();
     std::vector<Ogre::Entity *> c_balls = playersShip->getCannonBalls();
     for(size_t i = 0; i < leftCannonBallNodes.size(); ++i)
@@ -113,6 +117,10 @@ void fireDeckRightSide(btScalar Mass,
                   const btVector3 & endFire,
                   float factorForce)
 {
+    for(auto &i : objects_balls_right)
+    {
+        world->removeRigidBody(i);
+    }
     clearObjects();
     std::vector<Ogre::Entity *> c_balls = playersShip->getCannonBalls();
     for(size_t i = 0; i < leftCannonBallNodes.size(); ++i)
@@ -199,7 +207,7 @@ void * fireLeft(void *)
     Ogre::Vector2 tmp(orientation.z * cos(degree * PI / 180) - orientation.x * sin(degree * PI / 180),
                       orientation.z * sin(degree * PI / 180) + orientation.x * cos(degree * PI / 180));
     fireDeckLeftSide(10, btVector3(tmp.x, -orientation.y, -tmp.y),
-                 btVector3(tmp.x, 0, -tmp.y), 10000.0f);
+                 btVector3(tmp.x, 0, -tmp.y), 15000.0f);
 
     playersShip->setEmittingLeft(true);
     usleep(300000);
@@ -214,7 +222,7 @@ void * fireRight(void *)
     Ogre::Vector2 tmp(orientation.z * cos(degree * PI / 180) - orientation.x * sin(degree * PI / 180),
                       orientation.z * sin(degree * PI / 180) + orientation.x * cos(degree * PI / 180));
     fireDeckLeftSide(10, btVector3(-tmp.x, -orientation.y, tmp.y),
-                 btVector3(-tmp.x, 0, tmp.y), 10000.0f);
+                 btVector3(-tmp.x, 0, tmp.y), 15000.0f);
 
     playersShip->setEmittingRight(true);
     usleep(300000);
@@ -411,12 +419,12 @@ extern "C"
                         btRigidBody * rigidBody = new btRigidBody(0, motionState, shape, localInertia);
                         rigidBody->setUserPointer((void *) waterNode);
                         world->addRigidBody(rigidBody);
-                        objects_balls_left.push_back(rigidBody);
+                        //objects_balls_left.push_back(rigidBody);
                         //end of physics
 
                         playersShip = new DutchFrigate(pSceneMgr,
                                                        Ogre::Vector3(initXposition, VESSEL_Y_POSITION, initZposition - VESSEL_Z_DISTATION),
-                                                       21, 18);
+                                                       18, 18);
                         playersShip->setEmitting(false);
 
                         for(int i = 0; i < 18; ++i)
